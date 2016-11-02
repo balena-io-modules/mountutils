@@ -24,10 +24,15 @@
 
 // Adapted from https://support.microsoft.com/en-us/kb/165721
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <windows.h>
 #include <winioctl.h>
 #include <tchar.h>
 #include <stdio.h>
+#include "functions.hpp"
 #include "utils.hpp"
 
 DWORD GetAccessFlags(TCHAR driveLetter) {
@@ -153,7 +158,7 @@ NAN_METHOD(unmount) {
   }
 
   v8::String::Utf8Value device(info[0]->ToString());
-  char driveLetter = (char *)(*device)[0];
+  char driveLetter = (*device)[0];
 
   if (!EjectVolume(driveLetter)) {
     YIELD_ERROR(callback, "Unmount failed");

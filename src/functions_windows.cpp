@@ -39,7 +39,7 @@ DWORD GetAccessFlags(TCHAR driveLetter) {
   TCHAR rootName[5];
   wsprintf(rootName, TEXT("%c:\\"), driveLetter);
 
-  switch(GetDriveType(rootName)) {
+  switch (GetDriveType(rootName)) {
     case DRIVE_REMOVABLE:
       return GENERIC_READ | GENERIC_WRITE;
     case DRIVE_CDROM:

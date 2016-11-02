@@ -134,22 +134,6 @@ BOOL EjectVolume(TCHAR driveLetter) {
   return TRUE;
 }
 
-int main(int argc, char * argv[]) {
-  if (argc != 2) {
-    fprintf(stderr, "Usage: Eject <drive letter>\n\n");
-    return 1;
-  }
-
-  char driveLetter = argv[1][0];
-
-  if (!EjectVolume(driveLetter)) {
-    fprintf(stderr, "Failure ejecting drive %c.\n", driveLetter);
-    return 1;
-  }
-
-  return 0;
-}
-
 NAN_METHOD(unmount) {
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 

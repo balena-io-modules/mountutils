@@ -19,6 +19,9 @@
             "src/mountutils.cpp",
             "src/functions_windows.cpp"
           ],
+          "libraries": [
+            "-luser32.lib",
+          ],
         } ],
 
         [ 'OS=="mac"', {

@@ -50,13 +50,13 @@ DWORD GetAccessFlags(TCHAR driveLetter) {
 }
 
 HANDLE OpenVolume(TCHAR driveLetter) {
-  DWORD dwAccessFlags = GetAccessFlags(driveLetter);
-  ATTEMPT(dwAccessFlags, INVALID_HANDLE_VALUE);
-  TCHAR szVolumeName[8];
-  wsprintf(szVolumeName, TEXT("\\\\.\\%c:"), driveLetter);
+  DWORD accessFlags = GetAccessFlags(driveLetter);
+  ATTEMPT(accessFlags, INVALID_HANDLE_VALUE);
+  TCHAR volumeName[8];
+  wsprintf(volumeName, TEXT("\\\\.\\%c:"), driveLetter);
 
-  return CreateFile(szVolumeName,
-                    dwAccessFlags,
+  return CreateFile(volumeName,
+                    accessFlags,
                     FILE_SHARE_READ | FILE_SHARE_WRITE,
                     NULL,
                     OPEN_EXISTING,

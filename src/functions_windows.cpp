@@ -78,11 +78,33 @@ BOOL LockVolume(HANDLE volume) {
   return FALSE;
 }
 
+BOOL UnlockVolume(HANDLE volume) {
+  DWORD bytesReturned;
+
+  return DeviceIoControl(volume, 
+                         FSCTL_UNLOCK_VOLUME,
+                         NULL, 0,
+                         NULL, 0,
+                         &bytesReturned,
+                         NULL);
+}
+
 BOOL DismountVolume(HANDLE volume) {
   DWORD bytesReturned;
 
   return DeviceIoControl(volume,
                          FSCTL_DISMOUNT_VOLUME,
+                         NULL, 0,
+                         NULL, 0,
+                         &bytesReturned,
+                         NULL);
+}
+
+BOOL IsVolumeMounted(HANDLE volume) {
+  DWORD bytesReturned;
+
+  return DeviceIoControl(volume, 
+                         FSCTL_IS_VOLUME_MOUNTED,
                          NULL, 0,
                          NULL, 0,
                          &bytesReturned,
@@ -102,7 +124,7 @@ BOOL AllowRemovalOfVolume(HANDLE volume) {
                          NULL);
  }
 
-BOOL AutoEjectVolume(HANDLE volume) {
+BOOL EjectVolume(HANDLE volume) {
   DWORD bytesReturned;
 
   return DeviceIoControl(volume,
@@ -113,7 +135,7 @@ BOOL AutoEjectVolume(HANDLE volume) {
                          NULL);
 }
 
-BOOL EjectVolume(TCHAR driveLetter) {
+BOOL Eject(TCHAR driveLetter) {
 
   // Open the volume.
   HANDLE volume = OpenVolume(driveLetter);
@@ -121,14 +143,19 @@ BOOL EjectVolume(TCHAR driveLetter) {
     return FALSE;
   }
 
+  if (!IsVolumeMounted(volume)) {
+    return TRUE;
+  }
+
   ATTEMPT(LockVolume(volume), FALSE);
   ATTEMPT(DismountVolume(volume), FALSE);
 
   // Set prevent removal to false and eject the volume.
   if (AllowRemovalOfVolume(volume)) {
-    AutoEjectVolume(volume);
+    EjectVolume(volume);
   }
 
+  ATTEMPT(UnlockVolume(volume), FALSE);
   ATTEMPT(CloseHandle(volume), FALSE);
 
   return TRUE;
@@ -144,7 +171,7 @@ NAN_METHOD(unmount) {
   v8::String::Utf8Value device(info[0]->ToString());
   char driveLetter = (*device)[0];
 
-  if (!EjectVolume(driveLetter)) {
+  if (!Eject(driveLetter)) {
     YIELD_ERROR(callback, "Unmount failed");
   }
 

@@ -35,28 +35,12 @@
 #include "functions.hpp"
 #include "utils.hpp"
 
-DWORD GetAccessFlags(TCHAR driveLetter) {
-  TCHAR rootName[5];
-  wsprintf(rootName, TEXT("%c:\\"), driveLetter);
-
-  switch (GetDriveType(rootName)) {
-    case DRIVE_REMOVABLE:
-      return GENERIC_READ | GENERIC_WRITE;
-    case DRIVE_CDROM:
-      return GENERIC_READ;
-    default:
-      return FALSE;
-  }
-}
-
 HANDLE OpenVolume(TCHAR driveLetter) {
-  DWORD accessFlags = GetAccessFlags(driveLetter);
-  ATTEMPT(accessFlags, INVALID_HANDLE_VALUE);
   TCHAR volumeName[8];
   wsprintf(volumeName, TEXT("\\\\.\\%c:"), driveLetter);
 
   return CreateFile(volumeName,
-                    accessFlags,
+                    GENERIC_READ | GENERIC_WRITE,
                     FILE_SHARE_READ | FILE_SHARE_WRITE,
                     NULL,
                     OPEN_EXISTING,

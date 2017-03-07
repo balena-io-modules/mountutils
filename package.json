@@ -22,7 +22,9 @@
   "scripts": {
     "configure": "node-gyp configure",
     "build": "node-gyp build",
-    "lint": "eslint *.js",
+    "lint-js": "eslint *.js",
+    "lint-cpp": "cpplint src/*",
+    "lint": "npm run lint-js && npm run lint-cpp",
     "test": "mocha"
   },
   "author": "Juan Cruz Viotti <juan@resin.io>",

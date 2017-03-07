@@ -1,5 +1,5 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#ifndef MOUNTUTILS_UTILS_HPP
+#define MOUNTUTILS_UTILS_HPP
 
 /*
  * The MIT License
@@ -24,8 +24,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-#define ATTEMPT(X, Y) if (!(X)) return (Y);
 
 #define YIELD_ERROR(CALLBACK, ERROR) \
   v8::Local<v8::Value> argv[1] = { Nan::Error((ERROR)) }; \

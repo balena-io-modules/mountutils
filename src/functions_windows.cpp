@@ -38,6 +38,7 @@
 #include "utils.hpp"
 
 enum MOUNTUTILS_ERROR {
+  INVALID_DRIVE,
   ACCESS_DENIED,
   UNKNOWN
 };
@@ -284,6 +285,7 @@ BOOL EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
 BOOL Eject(TCHAR driveLetter) {
   HANDLE volumeHandle = CreateVolumeHandleFromDriveLetter(driveLetter);
   if (volumeHandle == INVALID_HANDLE_VALUE) {
+    error = INVALID_DRIVE;
     return FALSE;
   }
 
@@ -342,6 +344,8 @@ NAN_METHOD(unmount) {
   if (!Eject(driveLetter)) {
     if (error == ACCESS_DENIED) {
       YIELD_ERROR(callback, "Unmount failed, access denied");
+    } else if (error == INVALID_DRIVE) {
+      YIELD_ERROR(callback, "Unmount failed, invalid drive");
     } else {
       YIELD_ERROR(callback, "Unmount failed");
     }

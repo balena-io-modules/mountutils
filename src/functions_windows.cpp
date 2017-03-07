@@ -55,10 +55,10 @@ HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath, DWORD flags) {
                     NULL);
 }
 
-HANDLE CreateVolumeHandleFromDriveLetter(TCHAR driveLetter) {
+HANDLE CreateVolumeHandleFromDriveLetter(TCHAR driveLetter, DWORD flags) {
   TCHAR devicePath[8];
   wsprintf(devicePath, TEXT("\\\\.\\%c:"), driveLetter);
-  return CreateVolumeHandleFromDevicePath(devicePath, GENERIC_READ | GENERIC_WRITE);
+  return CreateVolumeHandleFromDevicePath(devicePath, flags);
 }
 
 ULONG GetDeviceNumberFromVolumeHandle(HANDLE volume) {
@@ -282,8 +282,8 @@ BOOL EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
   return FALSE;
 }
 
-BOOL Eject(TCHAR driveLetter) {
-  HANDLE volumeHandle = CreateVolumeHandleFromDriveLetter(driveLetter);
+BOOL EjectDriveLetter(TCHAR driveLetter) {
+  HANDLE volumeHandle = CreateVolumeHandleFromDriveLetter(driveLetter, GENERIC_READ | GENERIC_WRITE);
   if (volumeHandle == INVALID_HANDLE_VALUE) {
     error = INVALID_DRIVE;
     return FALSE;
@@ -331,17 +331,51 @@ BOOL Eject(TCHAR driveLetter) {
   return CloseHandle(volumeHandle);
 }
 
+BOOL Eject(ULONG deviceNumber) {
+  DWORD logicalDrivesMask = GetLogicalDrives();
+  TCHAR currentDriveLetter = 'A';
+
+  if (logicalDrivesMask == 0) {
+    return FALSE;
+  }
+
+  while (logicalDrivesMask) {
+    if (logicalDrivesMask & 1) {
+      HANDLE driveHandle = CreateVolumeHandleFromDriveLetter(currentDriveLetter, 0);
+      if (driveHandle == INVALID_HANDLE_VALUE) {
+        return FALSE;
+      }
+
+      ULONG currentDeviceNumber = GetDeviceNumberFromVolumeHandle(driveHandle);
+
+      if (!CloseHandle(driveHandle)) {
+        return FALSE;
+      }
+
+      if (currentDeviceNumber == deviceNumber) {
+        if (!EjectDriveLetter(currentDriveLetter)) {
+          return FALSE;
+        }
+      }
+    }
+
+    currentDriveLetter++;
+    logicalDrivesMask >>= 1;
+  }
+
+  return TRUE;
+}
+
 NAN_METHOD(unmount) {
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
-  if (!info[0]->IsString()) {
+  if (!info[0]->IsNumber()) {
     YIELD_ERROR(callback, "Invalid device");
   }
 
-  v8::String::Utf8Value device(info[0]->ToString());
-  char driveLetter = (*device)[0];
+  unsigned int deviceId = info[0]->Uint32Value();
 
-  if (!Eject(driveLetter)) {
+  if (!Eject(deviceId)) {
     if (error == ACCESS_DENIED) {
       YIELD_ERROR(callback, "Unmount failed, access denied");
     } else if (error == INVALID_DRIVE) {

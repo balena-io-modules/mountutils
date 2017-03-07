@@ -18,12 +18,12 @@
 #include "functions.hpp"
 #include "utils.hpp"
 
-static int exit_code = 0; 
+static int exit_code = 0;
 
 void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
   CFRunLoopRef loop = (CFRunLoopRef)context;
 
-  // TODO: Get the actual dissenter result code
+  // TODO(jviotti): Get the actual dissenter result code
   if (dissenter != NULL) {
     exit_code = 1;
   }
@@ -48,8 +48,15 @@ NAN_METHOD(UnmountDisk) {
 
   CFRunLoopRef loop = CFRunLoopGetCurrent();
   DASessionScheduleWithRunLoop(session, loop, kCFRunLoopDefaultMode);
-  DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault, session, (char *)(*device));
-  DADiskUnmount(disk, kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce, unmount_callback, (void *)loop);
+  DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault,
+                                           session,
+                                           reinterpret_cast<char *>(*device));
+
+  DADiskUnmount(disk,
+                kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
+                unmount_callback,
+                reinterpret_cast<void *>(loop));
+
   CFRunLoopRun();
   DASessionUnscheduleFromRunLoop(session, loop, kCFRunLoopDefaultMode);
   CFRelease(session);

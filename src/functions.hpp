@@ -1,5 +1,5 @@
-#ifndef MOUNTUTILS_FUNCTIONS_HPP
-#define MOUNTUTILS_FUNCTIONS_HPP
+#ifndef SRC_FUNCTIONS_HPP_
+#define SRC_FUNCTIONS_HPP_
 
 /*
  * Copyright 2017 resin.io
@@ -21,4 +21,4 @@
 
 NAN_METHOD(UnmountDisk);
 
-#endif
+#endif  // SRC_FUNCTIONS_HPP_

@@ -18,7 +18,8 @@
 
 NAN_MODULE_INIT(MountUtilsInit) {
   Nan::Set(target, Nan::New("unmountDisk").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<v8::FunctionTemplate>(UnmountDisk)).ToLocalChecked());
+    Nan::GetFunction(Nan::New<v8::FunctionTemplate>(UnmountDisk))
+  .ToLocalChecked());
 }
 
 NODE_MODULE(MountUtils, MountUtilsInit)

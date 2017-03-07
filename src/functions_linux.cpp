@@ -27,7 +27,7 @@ NAN_METHOD(UnmountDisk) {
   }
 
   v8::String::Utf8Value device(info[0]->ToString());
-  int code = umount((char *)(*device));
+  int code = umount(reinterpret_cast<char *>(*device));
 
   if (code == 0) {
     YIELD_NOTHING(callback);

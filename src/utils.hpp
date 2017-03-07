@@ -1,5 +1,5 @@
-#ifndef MOUNTUTILS_UTILS_HPP
-#define MOUNTUTILS_UTILS_HPP
+#ifndef SRC_UTILS_HPP_
+#define SRC_UTILS_HPP_
 
 /*
  * The MIT License
@@ -28,9 +28,9 @@
 #define YIELD_ERROR(CALLBACK, ERROR) \
   v8::Local<v8::Value> argv[1] = { Nan::Error((ERROR)) }; \
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(), (CALLBACK), 1, argv); \
-  return; 
+  return;
 
 #define YIELD_NOTHING(CALLBACK) \
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(), (CALLBACK), 0, 0);
 
-#endif
+#endif  // SRC_UTILS_HPP_

@@ -59,7 +59,7 @@ ULONG GetDeviceNumberFromVolumeHandle(HANDLE volume) {
 
   BOOL result = DeviceIoControl(volume,
                                 IOCTL_STORAGE_GET_DEVICE_NUMBER,
-                                NULL, 0, 
+                                NULL, 0,
                                 &storageDeviceNumber,
                                 sizeof(storageDeviceNumber),
                                 &bytesReturned,
@@ -74,7 +74,7 @@ ULONG GetDeviceNumberFromVolumeHandle(HANDLE volume) {
 
 BOOL IsDriveFixed(TCHAR driveLetter) {
   TCHAR rootName[5];
-  wsprintf(rootName, TEXT("%c:\\"), driveLetter); 
+  wsprintf(rootName, TEXT("%c:\\"), driveLetter);
   return GetDriveType(rootName) == DRIVE_FIXED;
 }
 
@@ -101,17 +101,24 @@ BOOL LockVolume(HANDLE volume) {
 // which is licensed under "The Code Project Open License (CPOL) 1.02"
 // https://www.codeproject.com/info/cpol10.aspx
 DEVINST GetDeviceInstanceFromDeviceNumber(ULONG deviceNumber) {
-  GUID* guid = (GUID*)&GUID_DEVINTERFACE_DISK;
+  GUID* guid = reinterpret_cast<GUID *>(&GUID_DEVINTERFACE_DISK);
 
   // Get device interface info set handle for all devices attached to system
-  HDEVINFO deviceInformation = SetupDiGetClassDevs(guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+  DWORD deviceInformationFlags = DIGCF_PRESENT | DIGCF_DEVICEINTERFACE;
+  HDEVINFO deviceInformation = SetupDiGetClassDevs(guid,
+                                                   NULL, NULL,
+                                                   deviceInformationFlags);
+
   if (deviceInformation == INVALID_HANDLE_VALUE)  {
     return 0;
   }
 
   DWORD memberIndex = 0;
   BYTE buffer[1024];
-  PSP_DEVICE_INTERFACE_DETAIL_DATA deviceInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)buffer;
+
+  PSP_DEVICE_INTERFACE_DETAIL_DATA deviceInterfaceDetailData =
+    (PSP_DEVICE_INTERFACE_DETAIL_DATA)buffer;
+
   SP_DEVINFO_DATA deviceInformationData;
   DWORD requiredSize;
 
@@ -119,12 +126,19 @@ DEVINST GetDeviceInstanceFromDeviceNumber(ULONG deviceNumber) {
   deviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
 
   while (true) {
-    if (!SetupDiEnumDeviceInterfaces(deviceInformation, NULL, guid, memberIndex, &deviceInterfaceData)) {
+    if (!SetupDiEnumDeviceInterfaces(deviceInformation,
+                                     NULL,
+                                     guid,
+                                     memberIndex,
+                                     &deviceInterfaceData)) {
       break;
     }
 
     requiredSize = 0;
-    SetupDiGetDeviceInterfaceDetail(deviceInformation, &deviceInterfaceData, NULL, 0, &requiredSize, NULL);
+    SetupDiGetDeviceInterfaceDetail(deviceInformation,
+                                    &deviceInterfaceData,
+                                    NULL, 0,
+                                    &requiredSize, NULL);
 
     if (requiredSize == 0 || requiredSize > sizeof(buffer)) {
       memberIndex++;
@@ -148,13 +162,17 @@ DEVINST GetDeviceInstanceFromDeviceNumber(ULONG deviceNumber) {
       continue;
     }
 
-    HANDLE driveHandle = CreateVolumeHandleFromDevicePath(deviceInterfaceDetailData->DevicePath, 0);
+    LPCTSTR devicePath = deviceInterfaceDetailData->DevicePath;
+    HANDLE driveHandle = CreateVolumeHandleFromDevicePath(devicePath, 0);
+
     if (driveHandle == INVALID_HANDLE_VALUE) {
       memberIndex++;
       continue;
     }
 
-    ULONG currentDriveDeviceNumber = GetDeviceNumberFromVolumeHandle(driveHandle);
+    ULONG currentDriveDeviceNumber =
+      GetDeviceNumberFromVolumeHandle(driveHandle);
+
     CloseHandle(driveHandle);
 
     if (!currentDriveDeviceNumber) {
@@ -178,7 +196,7 @@ DEVINST GetDeviceInstanceFromDeviceNumber(ULONG deviceNumber) {
 BOOL UnlockVolume(HANDLE volume) {
   DWORD bytesReturned;
 
-  return DeviceIoControl(volume, 
+  return DeviceIoControl(volume,
                          FSCTL_UNLOCK_VOLUME,
                          NULL, 0,
                          NULL, 0,
@@ -200,7 +218,7 @@ BOOL DismountVolume(HANDLE volume) {
 BOOL IsVolumeMounted(HANDLE volume) {
   DWORD bytesReturned;
 
-  return DeviceIoControl(volume, 
+  return DeviceIoControl(volume,
                          FSCTL_IS_VOLUME_MOUNTED,
                          NULL, 0,
                          NULL, 0,
@@ -241,10 +259,16 @@ BOOL EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
   PNP_VETO_TYPE vetoType = PNP_VetoTypeUnknown;
   char vetoName[MAX_PATH];
 
-  // It's often seen that the removal fails on the first attempt but works on the second attempt.
+  // It's often seen that the removal fails on the first
+  // attempt but works on the second attempt.
   // See https://www.codeproject.com/articles/13839/how-to-prepare-a-usb-drive-for-safe-removal
   for (size_t tries = 0; tries < 3; tries++) {
-    status = CM_Request_Device_Eject(deviceInstance, &vetoType, vetoName, MAX_PATH, 0);
+    status = CM_Request_Device_Eject(deviceInstance,
+                                     &vetoType,
+                                     vetoName,
+                                     MAX_PATH,
+                                     0);
+
     if (status == CR_SUCCESS) {
       return TRUE;
     }
@@ -252,13 +276,19 @@ BOOL EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
     // We use this as an indicator that the device driver
     // is not setting the `SurpriseRemovalOK` capability.
     // See https://msdn.microsoft.com/en-us/library/windows/hardware/ff539722(v=vs.85).aspx
-    if (status == CR_REMOVE_VETOED && vetoType == PNP_VetoIllegalDeviceRequest) {
+    if (status == CR_REMOVE_VETOED &&
+        vetoType == PNP_VetoIllegalDeviceRequest) {
+      status = CM_Query_And_Remove_SubTree(deviceInstance,
+                                           &vetoType,
+                                           vetoName,
+                                           MAX_PATH,
 
       // We have to add the `CM_REMOVE_NO_RESTART` flag because
       // otherwise the just-removed device may be immediately
       // redetected, which might happen on XP and Vista.
       // See https://www.codeproject.com/articles/13839/how-to-prepare-a-usb-drive-for-safe-removal
-      status = CM_Query_And_Remove_SubTree(deviceInstance, &vetoType, vetoName, MAX_PATH, CM_REMOVE_NO_RESTART);
+
+                                           CM_REMOVE_NO_RESTART);
 
       if (status == CR_ACCESS_DENIED) {
         error = ACCESS_DENIED;
@@ -275,7 +305,10 @@ BOOL EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
 }
 
 BOOL EjectDriveLetter(TCHAR driveLetter) {
-  HANDLE volumeHandle = CreateVolumeHandleFromDriveLetter(driveLetter, GENERIC_READ | GENERIC_WRITE);
+  DWORD volumeFlags = GENERIC_READ | GENERIC_WRITE;
+  HANDLE volumeHandle = CreateVolumeHandleFromDriveLetter(driveLetter,
+                                                          volumeFlags);
+
   if (volumeHandle == INVALID_HANDLE_VALUE) {
     error = INVALID_DRIVE;
     return FALSE;
@@ -333,7 +366,9 @@ BOOL Eject(ULONG deviceNumber) {
 
   while (logicalDrivesMask) {
     if (logicalDrivesMask & 1) {
-      HANDLE driveHandle = CreateVolumeHandleFromDriveLetter(currentDriveLetter, 0);
+      HANDLE driveHandle =
+        CreateVolumeHandleFromDriveLetter(currentDriveLetter, 0);
+
       if (driveHandle == INVALID_HANDLE_VALUE) {
         return FALSE;
       }

@@ -366,7 +366,7 @@ BOOL Eject(ULONG deviceNumber) {
   return TRUE;
 }
 
-NAN_METHOD(unmount) {
+NAN_METHOD(UnmountDisk) {
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
   if (!info[0]->IsNumber()) {

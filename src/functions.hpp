@@ -27,6 +27,6 @@
 
 #include <nan.h>
 
-NAN_METHOD(unmount);
+NAN_METHOD(UnmountDisk);
 
 #endif

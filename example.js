@@ -1,6 +1,6 @@
 const mountutils = require('.');
 
-mountutils.unmount('F', (error) => {
+mountutils.unmountDisk('F', (error) => {
   if (error) {
     throw error;
   }

@@ -39,7 +39,7 @@ void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
   CFRunLoopStop(loop);
 }
 
-NAN_METHOD(unmount) {
+NAN_METHOD(UnmountDisk) {
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
   if (!info[0]->IsString()) {

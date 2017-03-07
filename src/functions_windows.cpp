@@ -37,17 +37,20 @@
 #include "functions.hpp"
 #include "utils.hpp"
 
-HANDLE CreateVolumeHandleFromDriveLetter(TCHAR driveLetter) {
-  TCHAR volumeName[8];
-  wsprintf(volumeName, TEXT("\\\\.\\%c:"), driveLetter);
-
-  return CreateFile(volumeName,
+HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath) {
+  return CreateFile(devicePath,
                     GENERIC_READ | GENERIC_WRITE,
                     FILE_SHARE_READ | FILE_SHARE_WRITE,
                     NULL,
                     OPEN_EXISTING,
                     0,
                     NULL);
+}
+
+HANDLE CreateVolumeHandleFromDriveLetter(TCHAR driveLetter) {
+  TCHAR devicePath[8];
+  wsprintf(devicePath, TEXT("\\\\.\\%c:"), driveLetter);
+  return CreateVolumeHandleFromDevicePath(devicePath);
 }
 
 ULONG GetDeviceNumberFromVolumeHandle(HANDLE volume) {
@@ -63,7 +66,7 @@ ULONG GetDeviceNumberFromVolumeHandle(HANDLE volume) {
                                 NULL);
 
   if (!result) {
-    return -1;
+    return 0;
   }
 
   return storageDeviceNumber.DeviceNumber;
@@ -94,73 +97,77 @@ BOOL LockVolume(HANDLE volume) {
   return FALSE;
 }
 
-DEVINST GetDeviceInstanceFromDeviceNumber(ULONG DeviceNumber) {
+// Adapted from https://www.codeproject.com/articles/13839/how-to-prepare-a-usb-drive-for-safe-removal
+// which is licensed under "The Code Project Open License (CPOL) 1.02"
+// https://www.codeproject.com/info/cpol10.aspx
+DEVINST GetDeviceInstanceFromDeviceNumber(ULONG deviceNumber) {
   GUID* guid = (GUID*)&GUID_DEVINTERFACE_DISK;
 
-  // Get device interface info set handle
-  // for all devices attached to system
-  HDEVINFO deviceInformation = SetupDiGetClassDevs(guid, NULL, NULL,
-                    DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
-
+  // Get device interface info set handle for all devices attached to system
+  HDEVINFO deviceInformation = SetupDiGetClassDevs(guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
   if (deviceInformation == INVALID_HANDLE_VALUE)  {
     return 0;
   }
 
-  // Retrieve a context structure for a device interface
-  // of a device information set.
-  DWORD dwIndex = 0;
+  DWORD memberIndex = 0;
+  BYTE buffer[1024];
+  PSP_DEVICE_INTERFACE_DETAIL_DATA deviceInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)buffer;
+  SP_DEVINFO_DATA deviceInformationData;
+  DWORD requiredSize;
 
-  BYTE Buf[1024];
-  PSP_DEVICE_INTERFACE_DETAIL_DATA pspdidd = (PSP_DEVICE_INTERFACE_DETAIL_DATA)Buf;
-  SP_DEVICE_INTERFACE_DATA spdid;
-  SP_DEVINFO_DATA spdd;
-  DWORD dwSize;
+  SP_DEVICE_INTERFACE_DATA deviceInterfaceData;
+  deviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
 
-  spdid.cbSize = sizeof(spdid);
-
-  while (true)  {
-    if (!SetupDiEnumDeviceInterfaces(deviceInformation, NULL, guid, dwIndex, &spdid)) {
+  while (true) {
+    if (!SetupDiEnumDeviceInterfaces(deviceInformation, NULL, guid, memberIndex, &deviceInterfaceData)) {
       break;
     }
 
-    dwSize = 0;
-    SetupDiGetDeviceInterfaceDetail(deviceInformation,
-      &spdid, NULL, 0, &dwSize, NULL);
+    requiredSize = 0;
+    SetupDiGetDeviceInterfaceDetail(deviceInformation, &deviceInterfaceData, NULL, 0, &requiredSize, NULL);
 
-    if ( dwSize!=0 && dwSize<=sizeof(Buf) ) {
-      pspdidd->cbSize = sizeof(*pspdidd); // 5 Bytes!
-
-      ZeroMemory((PVOID)&spdd, sizeof(spdd));
-      spdd.cbSize = sizeof(spdd);
-
-      long res =
-        SetupDiGetDeviceInterfaceDetail(deviceInformation, &
-                                        spdid, pspdidd,
-                                        dwSize, &dwSize,
-                                        &spdd);
-      if ( res ) {
-        HANDLE hDrive = CreateFile(pspdidd->DevicePath,0,
-                      FILE_SHARE_READ | FILE_SHARE_WRITE,
-                      NULL, OPEN_EXISTING, 0, NULL);
-        if ( hDrive != INVALID_HANDLE_VALUE ) {
-          STORAGE_DEVICE_NUMBER sdn;
-          DWORD dwBytesReturned = 0;
-          res = DeviceIoControl(hDrive,
-                        IOCTL_STORAGE_GET_DEVICE_NUMBER,
-                        NULL, 0, &sdn, sizeof(sdn),
-                        &dwBytesReturned, NULL);
-          if ( res ) {
-            if ( DeviceNumber == (long)sdn.DeviceNumber ) {
-              CloseHandle(hDrive);
-              SetupDiDestroyDeviceInfoList(deviceInformation);
-              return spdd.DevInst;
-            }
-          }
-          CloseHandle(hDrive);
-        }
-      }
+    if (requiredSize == 0 || requiredSize > sizeof(buffer)) {
+      memberIndex++;
+      continue;
     }
-    dwIndex++;
+
+    deviceInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+    ZeroMemory((PVOID)&deviceInformationData, sizeof(SP_DEVINFO_DATA));
+    deviceInformationData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    BOOL result = SetupDiGetDeviceInterfaceDetail(deviceInformation,
+                                                  &deviceInterfaceData,
+                                                  deviceInterfaceDetailData,
+                                                  sizeof(buffer),
+                                                  &requiredSize,
+                                                  &deviceInformationData);
+
+    if (!result) {
+      memberIndex++;
+      continue;
+    }
+
+    HANDLE driveHandle = CreateVolumeHandleFromDevicePath(deviceInterfaceDetailData->DevicePath);
+    if (driveHandle == INVALID_HANDLE_VALUE) {
+      memberIndex++;
+      continue;
+    }
+
+    ULONG currentDriveDeviceNumber = GetDeviceNumberFromVolumeHandle(driveHandle);
+    CloseHandle(driveHandle);
+
+    if (!currentDriveDeviceNumber) {
+      memberIndex++;
+      continue;
+    }
+
+    if (deviceNumber == currentDriveDeviceNumber) {
+      SetupDiDestroyDeviceInfoList(deviceInformation);
+      return deviceInformationData.DevInst;
+    }
+
+    memberIndex++;
   }
 
   SetupDiDestroyDeviceInfoList(deviceInformation);
@@ -275,7 +282,7 @@ BOOL Eject(TCHAR driveLetter) {
 
   if (IsDriveFixed(driveLetter)) {
     ULONG deviceNumber = GetDeviceNumberFromVolumeHandle(volumeHandle);
-    if (deviceNumber < 0) {
+    if (!deviceNumber) {
       CloseHandle(volumeHandle);
       return FALSE;
     }

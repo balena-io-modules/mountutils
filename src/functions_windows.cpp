@@ -37,9 +37,16 @@
 #include "functions.hpp"
 #include "utils.hpp"
 
-HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath) {
+enum MOUNTUTILS_ERROR {
+  ACCESS_DENIED,
+  UNKNOWN
+};
+
+static MOUNTUTILS_ERROR error = UNKNOWN;
+
+HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath, DWORD flags) {
   return CreateFile(devicePath,
-                    GENERIC_READ | GENERIC_WRITE,
+                    flags,
                     FILE_SHARE_READ | FILE_SHARE_WRITE,
                     NULL,
                     OPEN_EXISTING,
@@ -50,7 +57,7 @@ HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath) {
 HANDLE CreateVolumeHandleFromDriveLetter(TCHAR driveLetter) {
   TCHAR devicePath[8];
   wsprintf(devicePath, TEXT("\\\\.\\%c:"), driveLetter);
-  return CreateVolumeHandleFromDevicePath(devicePath);
+  return CreateVolumeHandleFromDevicePath(devicePath, GENERIC_READ | GENERIC_WRITE);
 }
 
 ULONG GetDeviceNumberFromVolumeHandle(HANDLE volume) {
@@ -148,7 +155,7 @@ DEVINST GetDeviceInstanceFromDeviceNumber(ULONG deviceNumber) {
       continue;
     }
 
-    HANDLE driveHandle = CreateVolumeHandleFromDevicePath(deviceInterfaceDetailData->DevicePath);
+    HANDLE driveHandle = CreateVolumeHandleFromDevicePath(deviceInterfaceDetailData->DevicePath, 0);
     if (driveHandle == INVALID_HANDLE_VALUE) {
       memberIndex++;
       continue;
@@ -260,6 +267,11 @@ BOOL EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
       // See https://www.codeproject.com/articles/13839/how-to-prepare-a-usb-drive-for-safe-removal
       status = CM_Query_And_Remove_SubTree(deviceInstance, &vetoType, vetoName, MAX_PATH, CM_REMOVE_NO_RESTART);
 
+      if (status == CR_ACCESS_DENIED) {
+        error = ACCESS_DENIED;
+        return FALSE;
+      }
+
       return status == CR_SUCCESS;
     }
 
@@ -328,7 +340,11 @@ NAN_METHOD(unmount) {
   char driveLetter = (*device)[0];
 
   if (!Eject(driveLetter)) {
-    YIELD_ERROR(callback, "Unmount failed");
+    if (error == ACCESS_DENIED) {
+      YIELD_ERROR(callback, "Unmount failed, access denied");
+    } else {
+      YIELD_ERROR(callback, "Unmount failed");
+    }
   }
 
   YIELD_NOTHING(callback);

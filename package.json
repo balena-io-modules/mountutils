@@ -1,13 +1,36 @@
 {
+  "name": "mountutils",
+  "version": "1.0.0",
   "main": "index.js",
+  "description": "Cross platform mount related utilities",
+  "homepage": "https://github.com/resin-io-modules/mountutils",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/resin-io-modules/mountutils.git"
+  },
+  "keywords": [
+    "mount",
+    "utils",
+    "unmount",
+    "unmounDisk",
+    "cross",
+    "platform"
+  ],
+  "directories": {
+    "test": "tests"
+  },
   "scripts": {
     "configure": "node-gyp configure",
     "build": "node-gyp build",
+    "lint": "eslint *.js",
     "test": "mocha"
   },
+  "author": "Juan Cruz Viotti <juan@resin.io>",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "nan": "^2.0.5",
+    "eslint": "^3.17.1",
     "mocha": "^2.2.5",
+    "nan": "^2.0.5",
     "node-gyp": "^1.0.3"
   },
   "dependencies": {

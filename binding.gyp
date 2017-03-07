@@ -21,6 +21,7 @@
           ],
           "libraries": [
             "-luser32.lib",
+            "-lsetupapi.lib",
           ],
         } ],
 

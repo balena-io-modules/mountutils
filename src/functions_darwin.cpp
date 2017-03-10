@@ -43,26 +43,17 @@ void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
   CFRunLoopStop(loop);
 }
 
-NAN_METHOD(UnmountDisk) {
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    YIELD_ERROR(callback, "Invalid device");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
+int unmount_whole_disk(const char *device) {
   DASessionRef session = DASessionCreate(kCFAllocatorDefault);
-
   if (session == NULL) {
-    YIELD_ERROR(callback, "Couldn't create DiskArbitration session");
+    return 1;
   }
 
   CFRunLoopRef loop = CFRunLoopGetCurrent();
   DASessionScheduleWithRunLoop(session, loop, kCFRunLoopDefaultMode);
   DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault,
                                            session,
-                                           reinterpret_cast<char *>(*device));
+                                           device);
 
   DADiskUnmount(disk,
                 kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
@@ -75,7 +66,21 @@ NAN_METHOD(UnmountDisk) {
     CFRelease(session);
   }
 
-  if (exit_code == 0) {
+  return exit_code;
+}
+
+NAN_METHOD(UnmountDisk) {
+  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+
+  if (!info[0]->IsString()) {
+    YIELD_ERROR(callback, "Invalid device");
+  }
+
+  v8::String::Utf8Value device(info[0]->ToString());
+
+  int result = unmount_whole_disk(reinterpret_cast<char *>(*device));
+
+  if (result == 0) {
     YIELD_NOTHING(callback);
   } else {
     if (error == ACCESS_DENIED) {

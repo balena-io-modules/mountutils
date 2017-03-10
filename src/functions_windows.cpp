@@ -29,12 +29,6 @@
 #include "functions.hpp"
 #include "utils.hpp"
 
-enum MOUNTUTILS_ERROR {
-  INVALID_DRIVE,
-  ACCESS_DENIED,
-  UNKNOWN
-};
-
 static MOUNTUTILS_ERROR error = UNKNOWN;
 
 HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath, DWORD flags) {

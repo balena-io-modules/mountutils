@@ -19,12 +19,24 @@
 #include "utils.hpp"
 
 static int exit_code = 0;
+static bool unmount_done = false;
+static MOUNTUTILS_ERROR error = UNKNOWN;
 
 void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
+  unmount_done = true;
   CFRunLoopRef loop = (CFRunLoopRef)context;
 
-  // TODO(jviotti): Get the actual dissenter result code
   if (dissenter != NULL) {
+    DAReturn code = DADissenterGetStatus(dissenter);
+
+    if (code == kDAReturnBadArgument || code == kDAReturnNotFound) {
+      error = INVALID_DRIVE;
+    }
+
+    if (code == kDAReturnNotPermitted || code == kDAReturnNotPrivileged) {
+      error = ACCESS_DENIED;
+    }
+
     exit_code = 1;
   }
 
@@ -57,13 +69,21 @@ NAN_METHOD(UnmountDisk) {
                 unmount_callback,
                 reinterpret_cast<void *>(loop));
 
-  CFRunLoopRun();
-  DASessionUnscheduleFromRunLoop(session, loop, kCFRunLoopDefaultMode);
-  CFRelease(session);
+  if (!unmount_done) {
+    CFRunLoopRun();
+    DASessionUnscheduleFromRunLoop(session, loop, kCFRunLoopDefaultMode);
+    CFRelease(session);
+  }
 
   if (exit_code == 0) {
     YIELD_NOTHING(callback);
   } else {
-    YIELD_ERROR(callback, "Unmount failed");
+    if (error == ACCESS_DENIED) {
+      YIELD_ERROR(callback, "Unmount failed, access denied");
+    } else if (error == INVALID_DRIVE) {
+      YIELD_ERROR(callback, "Unmount failed, invalid drive");
+    } else {
+      YIELD_ERROR(callback, "Unmount failed");
+    }
   }
 }

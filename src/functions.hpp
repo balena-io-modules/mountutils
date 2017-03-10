@@ -19,6 +19,12 @@
 
 #include <nan.h>
 
+enum MOUNTUTILS_ERROR {
+  INVALID_DRIVE,
+  ACCESS_DENIED,
+  UNKNOWN
+};
+
 NAN_METHOD(UnmountDisk);
 
 #endif  // SRC_FUNCTIONS_HPP_

@@ -28,9 +28,11 @@ void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
   if (dissenter != NULL) {
     DAReturn status = DADissenterGetStatus(dissenter);
 
-    if (status == kDAReturnBadArgument || status == kDAReturnNotFound) {
+    if (status == kDAReturnBadArgument ||
+        status == kDAReturnNotFound) {
       code = INVALID_DRIVE;
-    } else if (status == kDAReturnNotPermitted || status == kDAReturnNotPrivileged) {
+    } else if (status == kDAReturnNotPermitted ||
+               status == kDAReturnNotPrivileged) {
       code = ACCESS_DENIED;
     } else {
       code = UNKNOWN;
@@ -75,7 +77,8 @@ NAN_METHOD(UnmountDisk) {
 
   v8::String::Utf8Value device(info[0]->ToString());
 
-  MOUNTUTILS_RESULT result = unmount_whole_disk(reinterpret_cast<char *>(*device));
+  MOUNTUTILS_RESULT result =
+    unmount_whole_disk(reinterpret_cast<char *>(*device));
 
   if (result == SUCCESS) {
     YIELD_NOTHING(callback);

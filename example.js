@@ -18,10 +18,10 @@
 
 const mountutils = require('.');
 
-mountutils.unmountDisk('F', (error) => {
+mountutils.unmountDisk('/dev/disk2', (error) => {
   if (error) {
     throw error;
   }
 
-  console.log('Hello');
+  console.log('Done');
 });

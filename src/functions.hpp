@@ -19,7 +19,8 @@
 
 #include <nan.h>
 
-enum MOUNTUTILS_ERROR {
+enum MOUNTUTILS_RESULT {
+  SUCCESS,
   INVALID_DRIVE,
   ACCESS_DENIED,
   UNKNOWN

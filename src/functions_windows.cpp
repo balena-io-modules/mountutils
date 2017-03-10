@@ -29,7 +29,7 @@
 #include "functions.hpp"
 #include "utils.hpp"
 
-static MOUNTUTILS_ERROR error = UNKNOWN;
+static MOUNTUTILS_RESULT code = UNKNOWN;
 
 HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath, DWORD flags) {
   return CreateFile(devicePath,
@@ -285,7 +285,7 @@ BOOL EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
                                            CM_REMOVE_NO_RESTART);
 
       if (status == CR_ACCESS_DENIED) {
-        error = ACCESS_DENIED;
+        code = ACCESS_DENIED;
         return FALSE;
       }
 
@@ -304,7 +304,7 @@ BOOL EjectDriveLetter(TCHAR driveLetter) {
                                                           volumeFlags);
 
   if (volumeHandle == INVALID_HANDLE_VALUE) {
-    error = INVALID_DRIVE;
+    code = INVALID_DRIVE;
     return FALSE;
   }
 
@@ -397,9 +397,9 @@ NAN_METHOD(UnmountDisk) {
   unsigned int deviceId = info[0]->Uint32Value();
 
   if (!Eject(deviceId)) {
-    if (error == ACCESS_DENIED) {
+    if (code == ACCESS_DENIED) {
       YIELD_ERROR(callback, "Unmount failed, access denied");
-    } else if (error == INVALID_DRIVE) {
+    } else if (code == INVALID_DRIVE) {
       YIELD_ERROR(callback, "Unmount failed, invalid drive");
     } else {
       YIELD_ERROR(callback, "Unmount failed");

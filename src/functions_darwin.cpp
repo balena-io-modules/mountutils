@@ -18,35 +18,32 @@
 #include "functions.hpp"
 #include "utils.hpp"
 
-static int exit_code = 0;
 static bool unmount_done = false;
-static MOUNTUTILS_ERROR error = UNKNOWN;
+static MOUNTUTILS_RESULT code = SUCCESS;
 
 void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
   unmount_done = true;
   CFRunLoopRef loop = (CFRunLoopRef)context;
 
   if (dissenter != NULL) {
-    DAReturn code = DADissenterGetStatus(dissenter);
+    DAReturn status = DADissenterGetStatus(dissenter);
 
-    if (code == kDAReturnBadArgument || code == kDAReturnNotFound) {
-      error = INVALID_DRIVE;
+    if (status == kDAReturnBadArgument || status == kDAReturnNotFound) {
+      code = INVALID_DRIVE;
+    } else if (status == kDAReturnNotPermitted || status == kDAReturnNotPrivileged) {
+      code = ACCESS_DENIED;
+    } else {
+      code = UNKNOWN;
     }
-
-    if (code == kDAReturnNotPermitted || code == kDAReturnNotPrivileged) {
-      error = ACCESS_DENIED;
-    }
-
-    exit_code = 1;
   }
 
   CFRunLoopStop(loop);
 }
 
-int unmount_whole_disk(const char *device) {
+MOUNTUTILS_RESULT unmount_whole_disk(const char *device) {
   DASessionRef session = DASessionCreate(kCFAllocatorDefault);
   if (session == NULL) {
-    return 1;
+    return UNKNOWN;
   }
 
   CFRunLoopRef loop = CFRunLoopGetCurrent();
@@ -66,7 +63,7 @@ int unmount_whole_disk(const char *device) {
     CFRelease(session);
   }
 
-  return exit_code;
+  return code;
 }
 
 NAN_METHOD(UnmountDisk) {
@@ -78,17 +75,15 @@ NAN_METHOD(UnmountDisk) {
 
   v8::String::Utf8Value device(info[0]->ToString());
 
-  int result = unmount_whole_disk(reinterpret_cast<char *>(*device));
+  MOUNTUTILS_RESULT result = unmount_whole_disk(reinterpret_cast<char *>(*device));
 
-  if (result == 0) {
+  if (result == SUCCESS) {
     YIELD_NOTHING(callback);
+  } else if (result == ACCESS_DENIED) {
+    YIELD_ERROR(callback, "Unmount failed, access denied");
+  } else if (result == INVALID_DRIVE) {
+    YIELD_ERROR(callback, "Unmount failed, invalid drive");
   } else {
-    if (error == ACCESS_DENIED) {
-      YIELD_ERROR(callback, "Unmount failed, access denied");
-    } else if (error == INVALID_DRIVE) {
-      YIELD_ERROR(callback, "Unmount failed, invalid drive");
-    } else {
-      YIELD_ERROR(callback, "Unmount failed");
-    }
+    YIELD_ERROR(callback, "Unmount failed");
   }
 }

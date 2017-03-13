@@ -394,14 +394,48 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
   return MOUNTUTILS_SUCCESS;
 }
 
+// From http://stackoverflow.com/a/12923949
+MOUNTUTILS_RESULT stringToInteger(char *string, int *out) {
+  if (string[0] == '\0' || isspace((unsigned char) string[0])) {
+    return MOUNTUTILS_ERROR_GENERAL;
+  }
+
+  char *end;
+  errno = 0;
+  int result = strtol(string, &end, 10);
+
+  if (result > INT_MAX || result < INT_MIN ||
+      (errno == ERANGE && result == LONG_MAX) ||
+      (errno == ERANGE && result == LONG_MIN)) {
+    return MOUNTUTILS_ERROR_GENERAL;
+  }
+
+  if (*end != '\0') {
+    return MOUNTUTILS_ERROR_GENERAL;
+  }
+
+  *out = result;
+
+  return MOUNTUTILS_SUCCESS;
+}
+
 NAN_METHOD(UnmountDisk) {
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
-  if (!info[0]->IsNumber()) {
+  if (!info[0]->IsString()) {
     YIELD_ERROR(callback, "Invalid device");
   }
 
-  unsigned int deviceId = info[0]->Uint32Value();
+  v8::String::Utf8Value device(info[0]->ToString());
+
+  // Get the ID of a \\\\.\\PHYSICALDRIVEN path
+  char *deviceString = reinterpret_cast<char *>(*device);
+  char *deviceIdString = &deviceString[strlen(deviceString) - 1];
+  int deviceId;
+  if (stringToInteger(deviceIdString, &deviceId) != MOUNTUTILS_SUCCESS) {
+    YIELD_ERROR(callback, "Invalid device");
+  }
+
   MOUNTUTILS_RESULT result = Eject(deviceId);
 
   if (result == MOUNTUTILS_SUCCESS) {

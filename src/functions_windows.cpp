@@ -313,6 +313,8 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
     if (!CloseHandle(volumeHandle)) {
       return MOUNTUTILS_ERROR_GENERAL;
     }
+
+    return MOUNTUTILS_SUCCESS;
   }
 
   if (IsDriveFixed(driveLetter)) {

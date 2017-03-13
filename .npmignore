@@ -1,0 +1,10 @@
+# Files
+.*
+*.md
+*.log
+
+# Directories
+doc
+tests
+example
+benchmark

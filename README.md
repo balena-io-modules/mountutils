@@ -90,6 +90,11 @@ linters run without any warning:
 $ npm run lint
 ```
 
+License
+-------
+
+The project is licensed under the Apache 2.0 license.
+
 [issues]: https://github.com/resin-io-modules/mountutils/issues
 [newissue]: https://github.com/resin-io-modules/mountutils/issues/new
 [source]: https://github.com/resin-io-modules/mountutils

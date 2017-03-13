@@ -31,25 +31,16 @@
  * @param {Function} callback - callback (error)
  *
  * @example
- * mountutils.unmountDisk('/dev/disk2', (error) => {
- *   if (error) {
- *     throw error;
- *   }
+ * // macOS
+ * const drive = '/dev/disk2';
  *
- *   console.log('Done!');
- * });
+ * // GNU/Linux
+ * const drive = '/dev/sdb';
  *
- * @example
- * mountutils.unmountDisk('/dev/sdb', (error) => {
- *   if (error) {
- *     throw error;
- *   }
+ * // Windows
+ * const drive = '\\\\.\\PHYSICALDRIVE2';
  *
- *   console.log('Done!');
- * });
- *
- * @example
- * mountutils.unmountDisk('\\\\.\\PHYSICALDRIVE2', (error) => {
+ * mountutils.unmountDisk(drive, (error) => {
  *   if (error) {
  *     throw error;
  *   }

@@ -1,6 +1,9 @@
 mountutils
 ==========
 
+[![Build Status](https://travis-ci.org/resin-io-modules/mountutils.svg?branch=master)](https://travis-ci.org/resin-io-modules/mountutils)
+[![Build status](https://ci.appveyor.com/api/projects/status/c8elon3elh7tw2s0/branch/master?svg=true)](https://ci.appveyor.com/project/resin-io/mountutils/branch/master)
+
 > Cross platform mount related utilities
 
 Installation
@@ -29,27 +32,16 @@ Documentation
 
 **Example**  
 ```js
-mountutils.unmountDisk('/dev/disk2', (error) => {
-  if (error) {
-    throw error;
-  }
+// macOS
+const drive = '/dev/disk2';
 
-  console.log('Done!');
-});
-```
-**Example**  
-```js
-mountutils.unmountDisk('/dev/sdb', (error) => {
-  if (error) {
-    throw error;
-  }
+// GNU/Linux
+const drive = '/dev/sdb';
 
-  console.log('Done!');
-});
-```
-**Example**  
-```js
-mountutils.unmountDisk('\\\\.\\PHYSICALDRIVE2', (error) => {
+// Windows
+const drive = '\\\\.\\PHYSICALDRIVE2';
+
+mountutils.unmountDisk(drive, (error) => {
   if (error) {
     throw error;
   }

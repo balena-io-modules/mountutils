@@ -17,8 +17,16 @@
 'use strict';
 
 const mountutils = require('.');
+const drive = process.argv[2];
 
-mountutils.unmountDisk('/dev/disk2', (error) => {
+if (!drive) {
+  console.error(`Usage: ${process.argv[0]} ${process.argv[1]} <drive>`);
+  process.exit(1);
+}
+
+console.log(`Unmounting ${drive}`);
+
+mountutils.unmountDisk(drive, (error) => {
   if (error) {
     throw error;
   }

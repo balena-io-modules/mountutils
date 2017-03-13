@@ -14,6 +14,48 @@
  * limitations under the License.
  */
 
+/**
+ * @module mountutils
+ */
+
 'use strict';
+
+/**
+ * @summary Unmount a whole disk
+ * @function
+ * @public
+ * @static
+ * @name unmountDisk
+ *
+ * @param {String} device - device
+ * @param {Function} callback - callback (error)
+ *
+ * @example
+ * mountutils.unmountDisk('/dev/disk2', (error) => {
+ *   if (error) {
+ *     throw error;
+ *   }
+ *
+ *   console.log('Done!');
+ * });
+ *
+ * @example
+ * mountutils.unmountDisk('/dev/sdb', (error) => {
+ *   if (error) {
+ *     throw error;
+ *   }
+ *
+ *   console.log('Done!');
+ * });
+ *
+ * @example
+ * mountutils.unmountDisk('\\\\.\\PHYSICALDRIVE2', (error) => {
+ *   if (error) {
+ *     throw error;
+ *   }
+ *
+ *   console.log('Done!');
+ * });
+ */
 
 module.exports = require('bindings')('MountUtils');

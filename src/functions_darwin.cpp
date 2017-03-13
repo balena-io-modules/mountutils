@@ -19,7 +19,7 @@
 #include "utils.hpp"
 
 static bool unmount_done = false;
-static MOUNTUTILS_RESULT code = SUCCESS;
+static MOUNTUTILS_RESULT code = MOUNTUTILS_SUCCESS;
 
 void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
   unmount_done = true;
@@ -30,12 +30,12 @@ void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
 
     if (status == kDAReturnBadArgument ||
         status == kDAReturnNotFound) {
-      code = ERROR_INVALID_DRIVE;
+      code = MOUNTUTILS_ERROR_INVALID_DRIVE;
     } else if (status == kDAReturnNotPermitted ||
                status == kDAReturnNotPrivileged) {
-      code = ERROR_ACCESS_DENIED;
+      code = MOUNTUTILS_ERROR_ACCESS_DENIED;
     } else {
-      code = ERROR_GENERAL;
+      code = MOUNTUTILS_ERROR_GENERAL;
     }
   }
 
@@ -45,7 +45,7 @@ void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
 MOUNTUTILS_RESULT unmount_whole_disk(const char *device) {
   DASessionRef session = DASessionCreate(kCFAllocatorDefault);
   if (session == NULL) {
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   CFRunLoopRef loop = CFRunLoopGetCurrent();
@@ -82,9 +82,9 @@ NAN_METHOD(UnmountDisk) {
 
   if (result == SUCCESS) {
     YIELD_NOTHING(callback);
-  } else if (result == ERROR_ACCESS_DENIED) {
+  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
     YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == ERROR_INVALID_DRIVE) {
+  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
     YIELD_ERROR(callback, "Unmount failed, invalid drive");
   } else {
     YIELD_ERROR(callback, "Unmount failed");

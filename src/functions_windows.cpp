@@ -93,7 +93,7 @@ BOOL LockVolume(HANDLE volume) {
 // which is licensed under "The Code Project Open License (CPOL) 1.02"
 // https://www.codeproject.com/info/cpol10.aspx
 DEVINST GetDeviceInstanceFromDeviceNumber(ULONG deviceNumber) {
-  GUID* guid = reinterpret_cast<GUID *>(&GUID_DEVINTERFACE_DISK);
+  const GUID* guid = reinterpret_cast<const GUID *>(&GUID_DEVINTERFACE_DISK);
 
   // Get device interface info set handle for all devices attached to system
   DWORD deviceInformationFlags = DIGCF_PRESENT | DIGCF_DEVICEINTERFACE;
@@ -244,7 +244,7 @@ BOOL EjectRemovableVolume(HANDLE volume) {
 MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
   DEVINST deviceInstance = GetDeviceInstanceFromDeviceNumber(deviceNumber);
   if (!deviceInstance) {
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   CONFIGRET status;
@@ -262,7 +262,7 @@ MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
                                      0);
 
     if (status == CR_SUCCESS) {
-      return SUCCESS;
+      return MOUNTUTILS_SUCCESS;
     }
 
     // We use this as an indicator that the device driver
@@ -283,20 +283,20 @@ MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
                                            CM_REMOVE_NO_RESTART);
 
       if (status == CR_ACCESS_DENIED) {
-        return ERROR_ACCESS_DENIED;
+        return MOUNTUTILS_ERROR_ACCESS_DENIED;
       }
 
       if (status == CR_SUCCESS) {
-        return SUCCESS;
+        return MOUNTUTILS_SUCCESS;
       }
 
-      return ERROR_GENERAL;
+      return MOUNTUTILS_ERROR_GENERAL;
     }
 
     Sleep(500);
   }
 
-  return ERROR_GENERAL;
+  return MOUNTUTILS_ERROR_GENERAL;
 }
 
 MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
@@ -305,13 +305,13 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
                                                           volumeFlags);
 
   if (volumeHandle == INVALID_HANDLE_VALUE) {
-    return ERROR_INVALID_DRIVE;
+    return MOUNTUTILS_ERROR_INVALID_DRIVE;
   }
 
   // Don't proceed if the volume is not mounted
   if (!IsVolumeMounted(volumeHandle)) {
     if (!CloseHandle(volumeHandle)) {
-      return ERROR_GENERAL;
+      return MOUNTUTILS_ERROR_GENERAL;
     }
   }
 
@@ -319,11 +319,11 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
     ULONG deviceNumber = GetDeviceNumberFromVolumeHandle(volumeHandle);
     if (!deviceNumber) {
       CloseHandle(volumeHandle);
-      return ERROR_GENERAL;
+      return MOUNTUTILS_ERROR_GENERAL;
     }
 
     if (!CloseHandle(volumeHandle)) {
-      return ERROR_GENERAL;
+      return MOUNTUTILS_ERROR_GENERAL;
     }
 
     return EjectFixedDriveByDeviceNumber(deviceNumber);
@@ -331,29 +331,29 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
 
   if (!LockVolume(volumeHandle)) {
     CloseHandle(volumeHandle);
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   if (!DismountVolume(volumeHandle)) {
     CloseHandle(volumeHandle);
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   if (!EjectRemovableVolume(volumeHandle)) {
     CloseHandle(volumeHandle);
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   if (!UnlockVolume(volumeHandle)) {
     CloseHandle(volumeHandle);
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   if (!CloseHandle(volumeHandle)) {
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
-  return SUCCESS;
+  return MOUNTUTILS_SUCCESS;
 }
 
 MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
@@ -361,7 +361,7 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
   TCHAR currentDriveLetter = 'A';
 
   if (logicalDrivesMask == 0) {
-    return ERROR_GENERAL;
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   while (logicalDrivesMask) {
@@ -370,18 +370,18 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
         CreateVolumeHandleFromDriveLetter(currentDriveLetter, 0);
 
       if (driveHandle == INVALID_HANDLE_VALUE) {
-        return ERROR_GENERAL;
+        return MOUNTUTILS_ERROR_GENERAL;
       }
 
       ULONG currentDeviceNumber = GetDeviceNumberFromVolumeHandle(driveHandle);
 
       if (!CloseHandle(driveHandle)) {
-        return ERROR_GENERAL;
+        return MOUNTUTILS_ERROR_GENERAL;
       }
 
       if (currentDeviceNumber == deviceNumber) {
         MOUNTUTILS_RESULT result = EjectDriveLetter(currentDriveLetter);
-        if (result != SUCCESS) {
+        if (result != MOUNTUTILS_SUCCESS) {
           return result;
         }
       }
@@ -391,7 +391,7 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
     logicalDrivesMask >>= 1;
   }
 
-  return SUCCESS;
+  return MOUNTUTILS_SUCCESS;
 }
 
 NAN_METHOD(UnmountDisk) {
@@ -404,11 +404,11 @@ NAN_METHOD(UnmountDisk) {
   unsigned int deviceId = info[0]->Uint32Value();
   MOUNTUTILS_RESULT result = Eject(deviceId);
 
-  if (result == SUCCESS) {
+  if (result == MOUNTUTILS_SUCCESS) {
     YIELD_NOTHING(callback);
-  } else if (result == ERROR_ACCESS_DENIED) {
+  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
     YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == ERROR_INVALID_DRIVE) {
+  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
     YIELD_ERROR(callback, "Unmount failed, invalid drive");
   } else {
     YIELD_ERROR(callback, "Unmount failed");

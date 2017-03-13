@@ -384,9 +384,18 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
 
       if (currentDeviceNumber == deviceNumber) {
         foundDeviceNumber = TRUE;
-        MOUNTUTILS_RESULT result = EjectDriveLetter(currentDriveLetter);
-        if (result != MOUNTUTILS_SUCCESS) {
-          return result;
+        MOUNTUTILS_RESULT result;
+
+        // Retry ejecting 3 times, since I've seen that in some systems
+        // the filesystem is ejected, but the drive letter remains assigned,
+        // which gets fixed if you retry again.
+        for (size_t times = 0; times < 3; times++) {
+          result = EjectDriveLetter(currentDriveLetter);
+          if (result != MOUNTUTILS_SUCCESS) {
+            return result;
+          }
+
+          Sleep(500);
         }
       }
     }

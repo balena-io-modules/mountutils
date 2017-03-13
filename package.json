@@ -25,11 +25,12 @@
     "lint-js": "eslint *.js",
     "lint-cpp": "cpplint src/*",
     "lint": "npm run lint-js && npm run lint-cpp",
-    "test": "mocha"
+    "test": "npm run lint && mocha tests -R spec"
   },
   "author": "Juan Cruz Viotti <juan@resin.io>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^3.17.1",
     "mocha": "^3.2.0",
     "nan": "^2.5.1",

@@ -80,7 +80,7 @@ NAN_METHOD(UnmountDisk) {
   MOUNTUTILS_RESULT result =
     unmount_whole_disk(reinterpret_cast<char *>(*device));
 
-  if (result == SUCCESS) {
+  if (result == MOUNTUTILS_SUCCESS) {
     YIELD_NOTHING(callback);
   } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
     YIELD_ERROR(callback, "Unmount failed, access denied");

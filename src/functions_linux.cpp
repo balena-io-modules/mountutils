@@ -20,10 +20,14 @@
 #include "utils.hpp"
 
 NAN_METHOD(UnmountDisk) {
+  if (!info[1]->IsFunction()) {
+    return Nan::ThrowError("Callback must be a function");
+  }
+
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
   if (!info[0]->IsString()) {
-    YIELD_ERROR(callback, "Invalid device");
+    return Nan::ThrowError("Device argument must be a string");
   }
 
   v8::String::Utf8Value device(info[0]->ToString());

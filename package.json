@@ -26,7 +26,8 @@
     "lint-js": "eslint *.js",
     "lint-cpp": "cpplint src/*",
     "lint": "npm run lint-js && npm run lint-cpp",
-    "test": "npm run lint && mocha tests -R spec"
+    "test": "npm run lint && mocha tests -R spec",
+    "install": "node-gyp rebuild"
   },
   "author": "Juan Cruz Viotti <juan@resin.io>",
   "license": "Apache-2.0",
@@ -40,5 +41,9 @@
   },
   "dependencies": {
     "bindings": "^1.2.1"
+  },
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/resin-io-modules/mountutils/issues"
   }
 }

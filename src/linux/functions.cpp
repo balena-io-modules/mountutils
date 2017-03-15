@@ -20,22 +20,31 @@
 
 NAN_METHOD(UnmountDisk) {
   if (!info[1]->IsFunction()) {
-    return Nan::ThrowError("Callback must be a function");
+    return Nan::ThrowTypeError("Callback must be a function");
   }
 
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
   if (!info[0]->IsString()) {
-    return Nan::ThrowError("Device argument must be a string");
+    return Nan::ThrowTypeError("Device argument must be a string");
   }
 
   v8::String::Utf8Value device(info[0]->ToString());
-  int code = umount(reinterpret_cast<char *>(*device));
+
+  // Use MNT_DETACH, which performs a lazy unmount;
+  // makíng the mount point unavailable for new accesses,
+  // and only actually unmounting when the mount point ceases to be busy
+  const char *path = reinterpret_cast<char *>(*device);
+  // TODO: Get mountpaths from the device path, as `umount(device)`
+  // has been removed in Linux 2.3+
+  int code = umount2(path, MNT_DETACH);
 
   if (code == 0) {
-    YIELD_NOTHING(callback);
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
   } else {
-    char *error_string = strerror(code);
-    YIELD_ERROR(callback, error_string);
+    v8::Local<v8::Value> argv[1] = {
+      Nan::ErrnoException(errno, "umount", NULL, path)
+    };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
   }
 }

@@ -16,7 +16,6 @@
 
 #include <DiskArbitration/DiskArbitration.h>
 #include "../functions.hpp"
-#include "../utils.hpp"
 
 static bool unmount_done = false;
 static MOUNTUTILS_RESULT code = MOUNTUTILS_SUCCESS;

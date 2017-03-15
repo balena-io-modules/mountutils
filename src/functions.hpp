@@ -19,6 +19,14 @@
 
 #include <nan.h>
 
+#define YIELD_ERROR(CALLBACK, ERROR) \
+  v8::Local<v8::Value> argv[1] = { Nan::Error((ERROR)) }; \
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(), (CALLBACK), 1, argv); \
+  return;
+
+#define YIELD_NOTHING(CALLBACK) \
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(), (CALLBACK), 0, 0);
+
 enum MOUNTUTILS_RESULT {
   MOUNTUTILS_SUCCESS,
   MOUNTUTILS_ERROR_INVALID_DRIVE,

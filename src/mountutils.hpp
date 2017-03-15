@@ -1,5 +1,5 @@
-#ifndef SRC_FUNCTIONS_HPP_
-#define SRC_FUNCTIONS_HPP_
+#ifndef SRC_MOUNTUTILS_HPP_
+#define SRC_MOUNTUTILS_HPP_
 
 /*
  * Copyright 2017 resin.io
@@ -36,4 +36,4 @@ enum MOUNTUTILS_RESULT {
 
 NAN_METHOD(UnmountDisk);
 
-#endif  // SRC_FUNCTIONS_HPP_
+#endif  // SRC_MOUNTUTILS_HPP_

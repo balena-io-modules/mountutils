@@ -16,7 +16,7 @@
 
 #include <sys/mount.h>
 #include <errno.h>
-#include "../functions.hpp"
+#include "../mountutils.hpp"
 
 NAN_METHOD(UnmountDisk) {
   if (!info[1]->IsFunction()) {

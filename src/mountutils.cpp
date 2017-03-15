@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "functions.hpp"
+#include "mountutils.hpp"
 
 NAN_MODULE_INIT(MountUtilsInit) {
   Nan::Set(target, Nan::New("unmountDisk").ToLocalChecked(),

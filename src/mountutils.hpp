@@ -1,5 +1,5 @@
-#ifndef SRC_FUNCTIONS_HPP_
-#define SRC_FUNCTIONS_HPP_
+#ifndef SRC_MOUNTUTILS_HPP_
+#define SRC_MOUNTUTILS_HPP_
 
 /*
  * Copyright 2017 resin.io
@@ -19,6 +19,14 @@
 
 #include <nan.h>
 
+#define YIELD_ERROR(CALLBACK, ERROR) \
+  v8::Local<v8::Value> argv[1] = { Nan::Error((ERROR)) }; \
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(), (CALLBACK), 1, argv); \
+  return;
+
+#define YIELD_NOTHING(CALLBACK) \
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(), (CALLBACK), 0, 0);
+
 enum MOUNTUTILS_RESULT {
   MOUNTUTILS_SUCCESS,
   MOUNTUTILS_ERROR_INVALID_DRIVE,
@@ -28,4 +36,4 @@ enum MOUNTUTILS_RESULT {
 
 NAN_METHOD(UnmountDisk);
 
-#endif  // SRC_FUNCTIONS_HPP_
+#endif  // SRC_MOUNTUTILS_HPP_

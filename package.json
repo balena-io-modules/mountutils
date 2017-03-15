@@ -24,7 +24,7 @@
     "build": "node-gyp build",
     "readme": "jsdoc2md --template docs/README.hbs index.js > README.md",
     "lint-js": "eslint *.js",
-    "lint-cpp": "cpplint src/*",
+    "lint-cpp": "cpplint --recursive src",
     "lint": "npm run lint-js && npm run lint-cpp",
     "test": "npm run lint && mocha tests -R spec",
     "install": "node-gyp rebuild"

@@ -26,8 +26,7 @@
 #include <stdio.h>
 #include <cfgmgr32.h>
 #include <setupapi.h>
-#include "functions.hpp"
-#include "utils.hpp"
+#include "../mountutils.hpp"
 
 HANDLE CreateVolumeHandleFromDevicePath(LPCTSTR devicePath, DWORD flags) {
   return CreateFile(devicePath,

@@ -15,6 +15,7 @@
  */
 
 #include <sys/mount.h>
+#include <mntent.h>
 #include <errno.h>
 #include "../mountutils.hpp"
 
@@ -31,19 +32,52 @@ NAN_METHOD(UnmountDisk) {
 
   v8::String::Utf8Value device(info[0]->ToString());
 
-  // Use MNT_DETACH, which performs a lazy unmount;
+  const char *device_path = reinterpret_cast<char *>(*device);
+  const char *mount_path = NULL;
+
+  // Get mountpaths from the device path, as `umount(device)`
+  // has been removed in Linux 2.3+
+  struct mntent *mount_entity;
+  FILE *proc_mounts;
+
+  proc_mounts = setmntent("/proc/mounts", "r");
+
+  if (proc_mounts == NULL) {
+    v8::Local<v8::Value> argv[1] = {
+      Nan::ErrnoException(errno, "setmntent", NULL, "/proc/mounts")
+    };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return;
+  }
+
+  // TODO(jhermsmeier): Support únmounting multiple mountpoints (?)
+  // NOTE: Might not be necessary, as MNT_DETACH will cause
+  // every mount in the mount namespace to be lazily unmounted
+  while ((mount_entity = getmntent(proc_mounts)) != NULL) {
+    mount_path = mount_entity->mnt_dir;
+    if (strncmp(mount_path, device_path, strlen(device_path)) == 0) {
+      break;
+    }
+  }
+
+  endmntent(proc_mounts);
+
+  if (mount_path == NULL) {
+    v8::Local<v8::Value> argv[1] = { Nan::Error("Couldn't find mount paths") };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return;
+  }
+
+  // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
   // makíng the mount point unavailable for new accesses,
   // and only actually unmounting when the mount point ceases to be busy
-  const char *path = reinterpret_cast<char *>(*device);
-  // TODO: Get mountpaths from the device path, as `umount(device)`
-  // has been removed in Linux 2.3+
-  int code = umount2(path, MNT_DETACH);
+  int result = umount2(mount_path, MNT_DETACH);
 
-  if (code == 0) {
+  if (result == 0) {
     Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
   } else {
     v8::Local<v8::Value> argv[1] = {
-      Nan::ErrnoException(errno, "umount", NULL, path)
+      Nan::ErrnoException(errno, "umount", NULL, mount_path)
     };
     Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
   }

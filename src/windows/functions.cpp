@@ -390,6 +390,14 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
         // which gets fixed if you retry again.
         for (size_t times = 0; times < 3; times++) {
           result = EjectDriveLetter(currentDriveLetter);
+
+          // Abort the loop if we couldn't open a handle on the drive letter
+          // after previous attempts worked, since this means the drive was
+          // completely ejected, and that we don't have to keep retrying.
+          if (times > 0 && result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
+            break;
+          }
+
           if (result != MOUNTUTILS_SUCCESS) {
             return result;
           }

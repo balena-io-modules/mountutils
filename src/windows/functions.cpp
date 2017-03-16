@@ -537,20 +537,22 @@ NAN_METHOD(UnmountDisk) {
   char *deviceString = reinterpret_cast<char *>(*device);
   char *deviceIdString = &deviceString[strlen(deviceString) - 1];
   int deviceId;
+
   if (stringToInteger(deviceIdString, &deviceId) != MOUNTUTILS_SUCCESS) {
-    YIELD_ERROR(callback, "Invalid device");
+    v8::Local<v8::Value> argv[1] = { Nan::Error("Invalid device ID") };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return;
   }
 
   MOUNTUTILS_RESULT result = Eject(deviceId);
 
   if (result == MOUNTUTILS_SUCCESS) {
-    YIELD_NOTHING(callback);
-  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
-    YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
-    YIELD_ERROR(callback, "Unmount failed, invalid drive");
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
   } else {
-    YIELD_ERROR(callback, "Unmount failed");
+    v8::Local<v8::Value> argv[1] = {
+      Nan::ErrnoException(errno, "DismountVolume", NULL, deviceString)
+    };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
   }
 }
 

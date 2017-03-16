@@ -40,6 +40,20 @@ Run the test suite by doing:
 $ npm test
 ```
 
+Troubleshooting
+---------------
+
+### `error C2373: '__pfnDliNotifyHook2': redefinition`
+
+This error indicates that the version of npm you're running is too old. Upgrade
+by running:
+
+```sh
+npm install -g npm@latest
+```
+
+See the [following `node-gyp` issue](https://github.com/nodejs/node-gyp/issues/972) for more details.
+
 Contribute
 ----------
 

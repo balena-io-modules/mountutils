@@ -205,9 +205,9 @@ NAN_METHOD(UnmountDisk) {
   }
 
   v8::String::Utf8Value device(info[0]->ToString());
+  const char *device_path = reinterpret_cast<char *>(*device);
 
-  MOUNTUTILS_RESULT result =
-    unmount_whole_disk(reinterpret_cast<char *>(*device));
+  MOUNTUTILS_RESULT result = unmount_whole_disk(device_path);
 
   MountUtilsLog("Unmount complete");
 
@@ -239,12 +239,12 @@ NAN_METHOD(EjectDisk) {
     eject_disk(reinterpret_cast<char *>(*device));
 
   if (result == MOUNTUTILS_SUCCESS) {
-    YIELD_NOTHING(callback);
-  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
-    YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
-    YIELD_ERROR(callback, "Unmount failed, invalid drive");
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
   } else {
-    YIELD_ERROR(callback, "Unmount failed");
+    v8::Local<v8::Value> argv[1] = {
+      Nan::ErrnoException(errno, "DADiskUnmount", NULL, device_path)
+    };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
   }
+
 }

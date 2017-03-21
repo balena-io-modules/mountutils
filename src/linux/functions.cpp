@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <sys/stat.h>
 #include <sys/mount.h>
 #include <mntent.h>
 #include <errno.h>
@@ -34,6 +35,17 @@ NAN_METHOD(UnmountDisk) {
 
   const char *device_path = reinterpret_cast<char *>(*device);
   const char *mount_path = NULL;
+
+  // Stat the device to make sure it exists
+  struct stat stats;
+
+  if (stat(device_path, &stats) != 0) {
+    v8::Local<v8::Value> argv[1] = {
+      Nan::ErrnoException(errno, "stat", NULL, device_path)
+    };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return;
+  }
 
   // Get mountpaths from the device path, as `umount(device)`
   // has been removed in Linux 2.3+

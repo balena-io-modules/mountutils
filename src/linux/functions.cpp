@@ -45,6 +45,12 @@ NAN_METHOD(UnmountDisk) {
     };
     Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
     return;
+  } else if (S_ISDIR(stats.st_mode)) {
+    v8::Local<v8::Value> argv[1] = {
+      Nan::Error("Invalid device, path is a directory")
+    };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return;
   }
 
   // Get mountpaths from the device path, as `umount(device)`

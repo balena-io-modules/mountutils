@@ -90,11 +90,5 @@ NAN_METHOD(UnmountDisk) {
 
   endmntent(proc_mounts);
 
-  if (result == -1) {
-    v8::Local<v8::Value> argv[1] = { Nan::Error("Couldn't find mount paths") };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
-    return;
-  }
-
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
 }

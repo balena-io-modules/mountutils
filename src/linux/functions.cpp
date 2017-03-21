@@ -50,35 +50,39 @@ NAN_METHOD(UnmountDisk) {
     return;
   }
 
+  int result = -1;
+
   // TODO(jhermsmeier): Support únmounting multiple mountpoints (?)
   // NOTE: Might not be necessary, as MNT_DETACH will cause
   // every mount in the mount namespace to be lazily unmounted
   while ((mount_entity = getmntent(proc_mounts)) != NULL) {
-    mount_path = mount_entity->mnt_dir;
+    mount_path = mount_entity->mnt_fsname;
     if (strncmp(mount_path, device_path, strlen(device_path)) == 0) {
-      break;
+      // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
+      // makíng the mount point unavailable for new accesses,
+      // and only actually unmounting when the mount point ceases to be busy
+      result = umount2(mount_entity->mnt_dir, MNT_DETACH);
+
+      // If unmounting fails, bail out
+      if (result != 0) {
+        endmntent(proc_mounts);
+        v8::Local<v8::Value> argv[1] = {
+          Nan::ErrnoException(errno, "umount2", NULL, mount_entity->mnt_dir)
+        };
+        v8::Local<v8::Object> ctx = Nan::GetCurrentContext()->Global();
+        Nan::MakeCallback(ctx, callback, 1, argv);
+        return;
+      }
     }
   }
 
   endmntent(proc_mounts);
 
-  if (mount_path == NULL) {
+  if (result == -1) {
     v8::Local<v8::Value> argv[1] = { Nan::Error("Couldn't find mount paths") };
     Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
     return;
   }
 
-  // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
-  // makíng the mount point unavailable for new accesses,
-  // and only actually unmounting when the mount point ceases to be busy
-  int result = umount2(mount_path, MNT_DETACH);
-
-  if (result == 0) {
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
-  } else {
-    v8::Local<v8::Value> argv[1] = {
-      Nan::ErrnoException(errno, "umount", NULL, mount_path)
-    };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
-  }
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
 }

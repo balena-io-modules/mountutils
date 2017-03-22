@@ -70,14 +70,14 @@ NAN_METHOD(UnmountDisk) {
 
   int result = -1;
 
-  // TODO(jhermsmeier): Support únmounting multiple mountpoints (?)
+  // TODO(jhermsmeier): Support unmounting multiple mountpoints (?)
   // NOTE: Might not be necessary, as MNT_DETACH will cause
   // every mount in the mount namespace to be lazily unmounted
   while ((mount_entity = getmntent(proc_mounts)) != NULL) {
     mount_path = mount_entity->mnt_fsname;
     if (strncmp(mount_path, device_path, strlen(device_path)) == 0) {
       // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
-      // makíng the mount point unavailable for new accesses,
+      // making the mount point unavailable for new accesses,
       // and only actually unmounting when the mount point ceases to be busy
       result = umount2(mount_entity->mnt_dir, MNT_DETACH);
 

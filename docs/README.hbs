@@ -12,7 +12,7 @@ Installation
 Install `mountutils` by running:
 
 ```sh
-$ npm install --save resin-io-modules/mountutils
+$ npm install --save mountutils
 ```
 
 Documentation

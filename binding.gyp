@@ -10,14 +10,14 @@
         [ 'OS=="linux"', {
           "sources": [
             "src/mountutils.cpp",
-            "src/linux/*.cpp"
+            "src/linux/functions.cpp"
           ],
         } ],
 
         [ 'OS=="win"', {
           "sources": [
             "src/mountutils.cpp",
-            "src/windows/*.cpp"
+            "src/windows/functions.cpp"
           ],
           "libraries": [
             "-luser32.lib",
@@ -28,7 +28,7 @@
         [ 'OS=="mac"', {
           "sources": [
             "src/mountutils.cpp",
-            "src/darwin/*.cpp"
+            "src/darwin/functions.cpp"
           ],
           "link_settings": {
             "libraries": [

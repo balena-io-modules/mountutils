@@ -1,6 +1,6 @@
 {
   "name": "mountutils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "description": "Cross platform mount related utilities",
   "homepage": "https://github.com/resin-io-modules/mountutils",

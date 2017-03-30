@@ -6,5 +6,6 @@
 # Directories
 doc
 tests
+build
 example
 benchmark

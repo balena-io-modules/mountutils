@@ -49,4 +49,13 @@
  * });
  */
 
-module.exports = require('bindings')('MountUtils');
+module.exports = require('bindings')({
+  bindings: 'MountUtils',
+
+/* eslint-disable camelcase */
+
+  module_root: __dirname
+
+/* eslint-enable camelcase */
+
+});

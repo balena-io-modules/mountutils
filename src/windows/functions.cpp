@@ -360,7 +360,6 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
 MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
   DWORD logicalDrivesMask = GetLogicalDrives();
   TCHAR currentDriveLetter = 'A';
-  BOOL foundDeviceNumber = FALSE;
 
   if (logicalDrivesMask == 0) {
     return MOUNTUTILS_ERROR_GENERAL;
@@ -382,7 +381,6 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
       }
 
       if (currentDeviceNumber == deviceNumber) {
-        foundDeviceNumber = TRUE;
         MOUNTUTILS_RESULT result;
 
         // Retry ejecting 3 times, since I've seen that in some systems
@@ -409,10 +407,6 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
 
     currentDriveLetter++;
     logicalDrivesMask >>= 1;
-  }
-
-  if (!foundDeviceNumber) {
-    return MOUNTUTILS_ERROR_INVALID_DRIVE;
   }
 
   return MOUNTUTILS_SUCCESS;

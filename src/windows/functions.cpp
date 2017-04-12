@@ -229,6 +229,7 @@ BOOL EjectRemovableVolume(HANDLE volume) {
                                 NULL);
 
   if (!result) {
+    MountUtilsLog("Couldn't prevent media removal");
     return FALSE;
   }
 
@@ -243,6 +244,7 @@ BOOL EjectRemovableVolume(HANDLE volume) {
 MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
   DEVINST deviceInstance = GetDeviceInstanceFromDeviceNumber(deviceNumber);
   if (!deviceInstance) {
+    MountUtilsLog("Couldn't get instance from device number");
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
@@ -254,6 +256,7 @@ MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
   // attempt but works on the second attempt.
   // See https://www.codeproject.com/articles/13839/how-to-prepare-a-usb-drive-for-safe-removal
   for (size_t tries = 0; tries < 3; tries++) {
+    MountUtilsLog("Ejecting device instance");
     status = CM_Request_Device_Eject(deviceInstance,
                                      &vetoType,
                                      vetoName,
@@ -261,14 +264,18 @@ MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
                                      0);
 
     if (status == CR_SUCCESS) {
+      MountUtilsLog("Ejected device instance successfully");
       return MOUNTUTILS_SUCCESS;
     }
+
+    MountUtilsLog("Ejecting was vetoed");
 
     // We use this as an indicator that the device driver
     // is not setting the `SurpriseRemovalOK` capability.
     // See https://msdn.microsoft.com/en-us/library/windows/hardware/ff539722(v=vs.85).aspx
     if (status == CR_REMOVE_VETOED &&
         vetoType == PNP_VetoIllegalDeviceRequest) {
+      MountUtilsLog("Removing subtree");
       status = CM_Query_And_Remove_SubTree(deviceInstance,
                                            &vetoType,
                                            vetoName,
@@ -289,9 +296,12 @@ MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
         return MOUNTUTILS_SUCCESS;
       }
 
+      MountUtilsLog("Couldn't eject device instance");
       return MOUNTUTILS_ERROR_GENERAL;
     }
 
+
+    MountUtilsLog("Retrying");
     Sleep(500);
   }
 
@@ -303,13 +313,19 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
   HANDLE volumeHandle = CreateVolumeHandleFromDriveLetter(driveLetter,
                                                           volumeFlags);
 
+  MountUtilsLog("Creating volume handle");
+
   if (volumeHandle == INVALID_HANDLE_VALUE) {
+    MountUtilsLog("Couldn't create volume handle");
     return MOUNTUTILS_ERROR_INVALID_DRIVE;
   }
 
   // Don't proceed if the volume is not mounted
   if (!IsVolumeMounted(volumeHandle)) {
+    MountUtilsLog("Volume is not mounted");
+
     if (!CloseHandle(volumeHandle)) {
+      MountUtilsLog("Couldn't close volume handle");
       return MOUNTUTILS_ERROR_GENERAL;
     }
 
@@ -317,40 +333,60 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
   }
 
   if (IsDriveFixed(driveLetter)) {
+    MountUtilsLog("Drive is fixed");
+
     ULONG deviceNumber = GetDeviceNumberFromVolumeHandle(volumeHandle);
     if (!deviceNumber) {
+      MountUtilsLog("Couldn't get device number from volume handle");
       CloseHandle(volumeHandle);
       return MOUNTUTILS_ERROR_GENERAL;
     }
 
     if (!CloseHandle(volumeHandle)) {
+      MountUtilsLog("Couldn't close volume handle");
       return MOUNTUTILS_ERROR_GENERAL;
     }
 
+    MountUtilsLog("Ejecting fixed drive");
     return EjectFixedDriveByDeviceNumber(deviceNumber);
   }
 
+  MountUtilsLog("Locking volume");
+
   if (!LockVolume(volumeHandle)) {
+    MountUtilsLog("Couldn't lock volume");
     CloseHandle(volumeHandle);
     return MOUNTUTILS_ERROR_GENERAL;
   }
+
+  MountUtilsLog("Dismounting volume");
 
   if (!DismountVolume(volumeHandle)) {
+    MountUtilsLog("Couldn't dismount volume");
     CloseHandle(volumeHandle);
     return MOUNTUTILS_ERROR_GENERAL;
   }
+
+  MountUtilsLog("Ejecting volume");
 
   if (!EjectRemovableVolume(volumeHandle)) {
+    MountUtilsLog("Couldn't eject volume");
     CloseHandle(volumeHandle);
     return MOUNTUTILS_ERROR_GENERAL;
   }
+
+  MountUtilsLog("Unlocking volume");
 
   if (!UnlockVolume(volumeHandle)) {
+    MountUtilsLog("Couldn't unlock volume");
     CloseHandle(volumeHandle);
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
+  MountUtilsLog("Closing volume handle");
+
   if (!CloseHandle(volumeHandle)) {
+    MountUtilsLog("Couldn't close volume handle");
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
@@ -362,44 +398,56 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
   TCHAR currentDriveLetter = 'A';
 
   if (logicalDrivesMask == 0) {
+    MountUtilsLog("Couldn't get logical drives");
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
   while (logicalDrivesMask) {
     if (logicalDrivesMask & 1) {
+      MountUtilsLog("Opening drive letter handle");
+
       HANDLE driveHandle =
         CreateVolumeHandleFromDriveLetter(currentDriveLetter, 0);
 
       if (driveHandle == INVALID_HANDLE_VALUE) {
+        MountUtilsLog("Couldn't open drive letter handle");
         return MOUNTUTILS_ERROR_GENERAL;
       }
 
       ULONG currentDeviceNumber = GetDeviceNumberFromVolumeHandle(driveHandle);
 
+      MountUtilsLog("Closing drive letter handle");
+
       if (!CloseHandle(driveHandle)) {
+        MountUtilsLog("Couldn't close drive letter handle");
         return MOUNTUTILS_ERROR_GENERAL;
       }
 
       if (currentDeviceNumber == deviceNumber) {
+        MountUtilsLog("Drive letter device matches");
         MOUNTUTILS_RESULT result;
 
         // Retry ejecting 3 times, since I've seen that in some systems
         // the filesystem is ejected, but the drive letter remains assigned,
         // which gets fixed if you retry again.
         for (size_t times = 0; times < 3; times++) {
+          MountUtilsLog("Ejecting drive letter");
           result = EjectDriveLetter(currentDriveLetter);
 
           // Abort the loop if we couldn't open a handle on the drive letter
           // after previous attempts worked, since this means the drive was
           // completely ejected, and that we don't have to keep retrying.
           if (times > 0 && result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
+            MountUtilsLog("Drive letter has already been ejected");
             break;
           }
 
           if (result != MOUNTUTILS_SUCCESS) {
+            MountUtilsLog("Couldn't eject drive letter");
             return result;
           }
 
+          MountUtilsLog("Retrying");
           Sleep(500);
         }
       }

@@ -21,11 +21,13 @@ static bool unmount_done = false;
 static MOUNTUTILS_RESULT code = MOUNTUTILS_SUCCESS;
 
 void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
+  MountUtilsLog("Unmount callback called");
   unmount_done = true;
   CFRunLoopRef loop = (CFRunLoopRef)context;
 
   if (dissenter != NULL) {
     DAReturn status = DADissenterGetStatus(dissenter);
+    MountUtilsLog("Dissenter returned");
 
     if (status == kDAReturnBadArgument ||
         status == kDAReturnNotFound) {
@@ -34,24 +36,32 @@ void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
                status == kDAReturnNotPrivileged) {
       code = MOUNTUTILS_ERROR_ACCESS_DENIED;
     } else {
+      MountUtilsLog("Unknown dissenter status");
       code = MOUNTUTILS_ERROR_GENERAL;
     }
   }
 
+  MountUtilsLog("Stopping run loop from callback");
   CFRunLoopStop(loop);
 }
 
 MOUNTUTILS_RESULT unmount_whole_disk(const char *device) {
+  MountUtilsLog("Creating session");
+
   DASessionRef session = DASessionCreate(kCFAllocatorDefault);
   if (session == NULL) {
+    MountUtilsLog("Session couldn't be created");
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
+  MountUtilsLog("Starting run loop");
   CFRunLoopRef loop = CFRunLoopGetCurrent();
   DASessionScheduleWithRunLoop(session, loop, kCFRunLoopDefaultMode);
   DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault,
                                            session,
                                            device);
+
+  MountUtilsLog("Unmounting disk");
 
   DADiskUnmount(disk,
                 kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
@@ -59,6 +69,7 @@ MOUNTUTILS_RESULT unmount_whole_disk(const char *device) {
                 reinterpret_cast<void *>(loop));
 
   if (!unmount_done) {
+    MountUtilsLog("Stopping run loop");
     CFRunLoopRun();
     DASessionUnscheduleFromRunLoop(session, loop, kCFRunLoopDefaultMode);
     CFRelease(session);
@@ -82,6 +93,8 @@ NAN_METHOD(UnmountDisk) {
 
   MOUNTUTILS_RESULT result =
     unmount_whole_disk(reinterpret_cast<char *>(*device));
+
+  MountUtilsLog("Unmount complete");
 
   if (result == MOUNTUTILS_SUCCESS) {
     YIELD_NOTHING(callback);

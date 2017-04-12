@@ -15,6 +15,12 @@ Install `mountutils` by running:
 $ npm install --save mountutils
 ```
 
+Debug mode
+----------
+
+You can enable debug mode by setting the `MOUNTUTILS_DEBUG` environment
+variable.
+
 Documentation
 -------------
 

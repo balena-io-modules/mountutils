@@ -40,12 +40,16 @@ NAN_METHOD(UnmountDisk) {
   struct stat stats;
 
   if (stat(device_path, &stats) != 0) {
+    MountUtilsLog("Stat failed");
+
     v8::Local<v8::Value> argv[1] = {
       Nan::ErrnoException(errno, "stat", NULL, device_path)
     };
     Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
     return;
   } else if (S_ISDIR(stats.st_mode)) {
+    MountUtilsLog("Device is a directory");
+
     v8::Local<v8::Value> argv[1] = {
       Nan::Error("Invalid device, path is a directory")
     };
@@ -58,9 +62,11 @@ NAN_METHOD(UnmountDisk) {
   struct mntent *mount_entity;
   FILE *proc_mounts;
 
+  MountUtilsLog("Reading /proc/mounts");
   proc_mounts = setmntent("/proc/mounts", "r");
 
   if (proc_mounts == NULL) {
+    MountUtilsLog("Couldn't read /proc/mounts");
     v8::Local<v8::Value> argv[1] = {
       Nan::ErrnoException(errno, "setmntent", NULL, "/proc/mounts")
     };
@@ -70,11 +76,17 @@ NAN_METHOD(UnmountDisk) {
 
   while ((mount_entity = getmntent(proc_mounts)) != NULL) {
     mount_path = mount_entity->mnt_fsname;
+
+    MountUtilsLog(std::string("Mount point found: ") + std::string(mount_path));
+
     if (strncmp(mount_path, device_path, strlen(device_path)) == 0) {
+      MountUtilsLog("Mount point belongs to drive");
+
       // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
       // making the mount point unavailable for new accesses,
       // and only actually unmounting when the mount point ceases to be busy
       if (umount2(mount_entity->mnt_dir, MNT_DETACH) != 0) {
+        MountUtilsLog("Unmount failed");
         endmntent(proc_mounts);
         v8::Local<v8::Value> argv[1] = {
           Nan::ErrnoException(errno, "umount2", NULL, mount_entity->mnt_dir)
@@ -83,9 +95,12 @@ NAN_METHOD(UnmountDisk) {
         Nan::MakeCallback(ctx, callback, 1, argv);
         return;
       }
+
+      MountUtilsLog("Unmount success");
     }
   }
 
+  MountUtilsLog("Closing /proc/mounts");
   endmntent(proc_mounts);
 
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);

@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
+#include <cstdlib>
+#include <iostream>
 #include "mountutils.hpp"
 
 NAN_MODULE_INIT(MountUtilsInit) {
   Nan::Set(target, Nan::New("unmountDisk").ToLocalChecked(),
     Nan::GetFunction(Nan::New<v8::FunctionTemplate>(UnmountDisk))
   .ToLocalChecked());
+}
+
+
+void MountUtilsLog(std::string string) {
+  const char* debug = std::getenv("MOUNTUTILS_DEBUG");
+  if (debug != NULL) {
+    std::cout << "[mountutils] " << string << std::endl;
+  }
 }
 
 NODE_MODULE(MountUtils, MountUtilsInit)

@@ -18,6 +18,7 @@
  */
 
 #include <nan.h>
+#include <string>
 
 #define YIELD_ERROR(CALLBACK, ERROR) \
   v8::Local<v8::Value> argv[1] = { Nan::Error((ERROR)) }; \
@@ -33,6 +34,8 @@ enum MOUNTUTILS_RESULT {
   MOUNTUTILS_ERROR_ACCESS_DENIED,
   MOUNTUTILS_ERROR_GENERAL
 };
+
+void MountUtilsLog(std::string string);
 
 NAN_METHOD(UnmountDisk);
 

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.0.5 - 2017-04-14
+
+### Added
+
+- Add extra logging when setting `MOUNTUTILS_DEBUG`.
+
 ## v1.0.4 - 2017-04-12
 
 ### Changed

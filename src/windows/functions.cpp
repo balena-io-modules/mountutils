@@ -404,7 +404,8 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
 
   while (logicalDrivesMask) {
     if (logicalDrivesMask & 1) {
-      MountUtilsLog("Opening drive letter handle");
+      MountUtilsLog("Opening drive letter handle: "
+          + std::string(1, currentDriveLetter));
 
       HANDLE driveHandle =
         CreateVolumeHandleFromDriveLetter(currentDriveLetter, 0);
@@ -451,6 +452,8 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
           Sleep(500);
         }
       }
+
+      MountUtilsLog("Continuing with the next available letter");
     }
 
     currentDriveLetter++;

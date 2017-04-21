@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.0.6 - 2017-04-21
+
+### Changed
+
+- Fix "Unmount failed" error on Windows when there are network drives.
+
 ## v1.0.5 - 2017-04-14
 
 ### Added

@@ -393,6 +393,38 @@ MOUNTUTILS_RESULT EjectDriveLetter(TCHAR driveLetter) {
   return MOUNTUTILS_SUCCESS;
 }
 
+BOOL IsDriveEjectable(TCHAR driveLetter) {
+  TCHAR devicePath[8];
+  wsprintf(devicePath, TEXT("%c:\\"), driveLetter);
+
+  MountUtilsLog("Checking whether drive is ejectable: "
+      + std::string(1, driveLetter));
+
+  switch (GetDriveType(devicePath)) {
+    case DRIVE_NO_ROOT_DIR:
+      MountUtilsLog("The drive doesn't exist");
+      return FALSE;
+    case DRIVE_REMOVABLE:
+      MountUtilsLog("The drive is removable");
+      return TRUE;
+    case DRIVE_FIXED:
+      MountUtilsLog("The drive is fixed");
+      return TRUE;
+    case DRIVE_REMOTE:
+      MountUtilsLog("The drive is remote");
+      return FALSE;
+    case DRIVE_CDROM:
+      MountUtilsLog("The drive is a CDROM");
+      return FALSE;
+    case DRIVE_RAMDISK:
+      MountUtilsLog("The drive is a RAM disk");
+      return FALSE;
+    default:
+      MountUtilsLog("The drive type is unknown");
+      return FALSE;
+  }
+}
+
 MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
   DWORD logicalDrivesMask = GetLogicalDrives();
   TCHAR currentDriveLetter = 'A';
@@ -403,7 +435,7 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
   }
 
   while (logicalDrivesMask) {
-    if (logicalDrivesMask & 1) {
+    if (logicalDrivesMask & 1 && IsDriveEjectable(currentDriveLetter)) {
       MountUtilsLog("Opening drive letter handle: "
           + std::string(1, currentDriveLetter));
 

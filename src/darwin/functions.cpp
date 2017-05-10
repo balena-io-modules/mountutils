@@ -122,8 +122,7 @@ MOUNTUTILS_RESULT eject_disk(const char* device) {
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
-  // NOTE: Don't do this if you already have a
-  // running Core Foundation or Cocoa run loop
+  // Get a reference to the current thread's runloop
   CFRunLoopRef run_loop = CFRunLoopGetCurrent();
 
   // Get a disk object from the disk path

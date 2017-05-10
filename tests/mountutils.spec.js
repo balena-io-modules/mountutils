@@ -43,4 +43,28 @@ describe('MountUtils', function() {
 
   });
 
+  describe('.eject()', function() {
+
+    it('should be a function', function() {
+      chai.expect(mountutils.eject).to.be.a('function');
+    });
+
+    context('missing / wrong arguments', function() {
+
+      specify('throws on missing device', function() {
+        chai.expect( function() {
+          mountutils.eject( null, function() {})
+        }).to.throw( /must be a string/i )
+      })
+
+      specify('throws on missing callback', function() {
+        chai.expect( function() {
+          mountutils.eject( 'novalue' )
+        }).to.throw( /must be a function/i )
+      })
+
+    })
+
+  });
+
 });

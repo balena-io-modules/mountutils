@@ -20,25 +20,32 @@
 static bool unmount_done = false;
 static MOUNTUTILS_RESULT code = MOUNTUTILS_SUCCESS;
 
+MOUNTUTILS_RESULT translate_dissenter(DADissenterRef dissenter) {
+  if (dissenter) {
+    DAReturn status = DADissenterGetStatus(dissenter);
+    if (status == kDAReturnBadArgument ||
+        status == kDAReturnNotFound) {
+      return MOUNTUTILS_ERROR_INVALID_DRIVE;
+    } else if (status == kDAReturnNotPermitted ||
+               status == kDAReturnNotPrivileged) {
+      return MOUNTUTILS_ERROR_ACCESS_DENIED;
+    } else {
+      MountUtilsLog("Unknown dissenter status");
+      return MOUNTUTILS_ERROR_GENERAL;
+    }
+  } else {
+    return MOUNTUTILS_SUCCESS;
+  }
+}
+
 void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
   MountUtilsLog("Unmount callback called");
   unmount_done = true;
   CFRunLoopRef loop = (CFRunLoopRef)context;
 
   if (dissenter != NULL) {
-    DAReturn status = DADissenterGetStatus(dissenter);
     MountUtilsLog("Dissenter returned");
-
-    if (status == kDAReturnBadArgument ||
-        status == kDAReturnNotFound) {
-      code = MOUNTUTILS_ERROR_INVALID_DRIVE;
-    } else if (status == kDAReturnNotPermitted ||
-               status == kDAReturnNotPrivileged) {
-      code = MOUNTUTILS_ERROR_ACCESS_DENIED;
-    } else {
-      MountUtilsLog("Unknown dissenter status");
-      code = MOUNTUTILS_ERROR_GENERAL;
-    }
+    code = translate_dissenter(dissenter);
   }
 
   MountUtilsLog("Stopping run loop from callback");
@@ -78,6 +85,81 @@ MOUNTUTILS_RESULT unmount_whole_disk(const char *device) {
   return code;
 }
 
+void _eject_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
+  MountUtilsLog("[eject]: Eject callback");
+  if (dissenter) {
+    MountUtilsLog("[eject]: Eject dissenter");
+    code = translate_dissenter(dissenter);
+  } else {
+    MountUtilsLog("[eject]: Eject success");
+    code = MOUNTUTILS_SUCCESS;
+  }
+}
+
+void _unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
+  MountUtilsLog("[eject]: Unmount callback");
+  CFRunLoopRef run_loop = (CFRunLoopRef) context;
+  if (dissenter) {
+    MountUtilsLog("[eject]: Unmount dissenter");
+    code = translate_dissenter(dissenter);
+  } else {
+    MountUtilsLog("[eject]: Unmount success");
+    MountUtilsLog("[eject]: Ejecting...");
+    DADiskEject(disk,
+      kDADiskEjectOptionDefault,
+      _eject_cb,
+      reinterpret_cast<void *>(run_loop));
+  }
+}
+
+MOUNTUTILS_RESULT eject_disk(const char* device) {
+  // Create a session object
+  MountUtilsLog("[eject]: Creating DA session");
+  DASessionRef session = DASessionCreate(kCFAllocatorDefault);
+
+  if (session == NULL) {
+    MountUtilsLog("[eject]: Session couldn't be created");
+    return MOUNTUTILS_ERROR_GENERAL;
+  }
+
+  // NOTE: Don't do this if you already have a
+  // running Core Foundation or Cocoa run loop
+  CFRunLoopRef run_loop = CFRunLoopGetCurrent();
+
+  // Get a disk object from the disk path
+  MountUtilsLog("[eject]: Getting disk object");
+  DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault,
+    session, device);
+
+  // Unmount, and then eject from the unmount callback
+  MountUtilsLog("[eject]: Unmounting");
+  DADiskUnmount(disk,
+                kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
+                _unmount_cb,
+                reinterpret_cast<void *>(run_loop));
+
+  // Schedule a disk arbitration session
+  MountUtilsLog("[eject]: Schedule session on run loop");
+  DASessionScheduleWithRunLoop(session, run_loop, kCFRunLoopDefaultMode);
+
+  // Start the run loop: Run with a timeout of 1 second,
+  // and don't terminate after only handling one resource
+  // NOTE: As the unmount callback gets called *before* the runloop can
+  // be started here when there's no device to be unmounted or
+  // the device has already been unmounted, the loop would
+  // hang indefinitely until stopped manually otherwise.
+  // This way we don't have to manage state across callbacks
+  MountUtilsLog("[eject]: Starting run loop");
+  CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1, false);
+
+  // Clean up the session
+  MountUtilsLog("[eject]: Releasing session & disk object");
+  DASessionUnscheduleFromRunLoop(session, run_loop, kCFRunLoopDefaultMode);
+  CFRelease(session);
+
+  return code;
+}
+
 NAN_METHOD(UnmountDisk) {
   if (!info[1]->IsFunction()) {
     return Nan::ThrowError("Callback must be a function");
@@ -95,6 +177,33 @@ NAN_METHOD(UnmountDisk) {
     unmount_whole_disk(reinterpret_cast<char *>(*device));
 
   MountUtilsLog("Unmount complete");
+
+  if (result == MOUNTUTILS_SUCCESS) {
+    YIELD_NOTHING(callback);
+  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
+    YIELD_ERROR(callback, "Unmount failed, access denied");
+  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
+    YIELD_ERROR(callback, "Unmount failed, invalid drive");
+  } else {
+    YIELD_ERROR(callback, "Unmount failed");
+  }
+}
+
+NAN_METHOD(EjectDisk) {
+  if (!info[1]->IsFunction()) {
+    return Nan::ThrowError("Callback must be a function");
+  }
+
+  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowError("Device argument must be a string");
+  }
+
+  v8::String::Utf8Value device(info[0]->ToString());
+
+  MOUNTUTILS_RESULT result =
+    eject_disk(reinterpret_cast<char *>(*device));
 
   if (result == MOUNTUTILS_SUCCESS) {
     YIELD_NOTHING(callback);

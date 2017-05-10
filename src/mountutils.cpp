@@ -22,6 +22,10 @@ NAN_MODULE_INIT(MountUtilsInit) {
   Nan::Set(target, Nan::New("unmountDisk").ToLocalChecked(),
     Nan::GetFunction(Nan::New<v8::FunctionTemplate>(UnmountDisk))
   .ToLocalChecked());
+
+  Nan::Set(target, Nan::New("eject").ToLocalChecked(),
+    Nan::GetFunction(Nan::New<v8::FunctionTemplate>(EjectDisk))
+  .ToLocalChecked());
 }
 
 

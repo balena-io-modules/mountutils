@@ -106,7 +106,7 @@ NAN_METHOD(UnmountDisk) {
 
   v8::String::Utf8Value device(info[0]->ToString());
 
-  unmount_disk(reinterpret_cast<char *>(*device));
+  unmount_disk(reinterpret_cast<char *>(*device), callback);
 }
 
 // FIXME: This is just a stub copy of `UnmountDisk()`,
@@ -124,5 +124,5 @@ NAN_METHOD(EjectDisk) {
 
   v8::String::Utf8Value device(info[0]->ToString());
 
-  unmount_disk(reinterpret_cast<char *>(*device));
+  unmount_disk(reinterpret_cast<char *>(*device), callback);
 }

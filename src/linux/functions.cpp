@@ -20,20 +20,7 @@
 #include <errno.h>
 #include "../mountutils.hpp"
 
-NAN_METHOD(UnmountDisk) {
-  if (!info[1]->IsFunction()) {
-    return Nan::ThrowTypeError("Callback must be a function");
-  }
-
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    return Nan::ThrowTypeError("Device argument must be a string");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
-  const char *device_path = reinterpret_cast<char *>(*device);
+void unmount_disk(const char *device_path, v8::Local<v8::Function> callback) {
   const char *mount_path = NULL;
 
   // Stat the device to make sure it exists
@@ -104,4 +91,38 @@ NAN_METHOD(UnmountDisk) {
   endmntent(proc_mounts);
 
   Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
+}
+
+NAN_METHOD(UnmountDisk) {
+  if (!info[1]->IsFunction()) {
+    return Nan::ThrowTypeError("Callback must be a function");
+  }
+
+  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("Device argument must be a string");
+  }
+
+  v8::String::Utf8Value device(info[0]->ToString());
+
+  unmount_disk(reinterpret_cast<char *>(*device));
+}
+
+// FIXME: This is just a stub copy of `UnmountDisk()`,
+// and needs implementation!
+NAN_METHOD(EjectDisk) {
+  if (!info[1]->IsFunction()) {
+    return Nan::ThrowTypeError("Callback must be a function");
+  }
+
+  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("Device argument must be a string");
+  }
+
+  v8::String::Utf8Value device(info[0]->ToString());
+
+  unmount_disk(reinterpret_cast<char *>(*device));
 }

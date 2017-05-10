@@ -94,6 +94,8 @@ void _eject_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
     MountUtilsLog("[eject]: Eject success");
     code = MOUNTUTILS_SUCCESS;
   }
+  CFRunLoopRef run_loop = (CFRunLoopRef)context;
+  CFRunLoopStop(run_loop);
 }
 
 void _unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
@@ -102,6 +104,8 @@ void _unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
   if (dissenter) {
     MountUtilsLog("[eject]: Unmount dissenter");
     code = translate_dissenter(dissenter);
+    CFRunLoopRef run_loop = (CFRunLoopRef)context;
+    CFRunLoopStop(run_loop);
   } else {
     MountUtilsLog("[eject]: Unmount success");
     MountUtilsLog("[eject]: Ejecting...");
@@ -113,6 +117,9 @@ void _unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
 }
 
 MOUNTUTILS_RESULT eject_disk(const char* device) {
+  // Reset the result code
+  code = MOUNTUTILS_SUCCESS;
+
   // Create a session object
   MountUtilsLog("[eject]: Creating DA session");
   DASessionRef session = DASessionCreate(kCFAllocatorDefault);
@@ -141,15 +148,42 @@ MOUNTUTILS_RESULT eject_disk(const char* device) {
   MountUtilsLog("[eject]: Schedule session on run loop");
   DASessionScheduleWithRunLoop(session, run_loop, kCFRunLoopDefaultMode);
 
-  // Start the run loop: Run with a timeout of 1 second,
-  // and don't terminate after only handling one resource
+  // Start the run loop: Run with a timeout of 500ms (0.5s),
+  // and don't terminate after only handling one resource.
   // NOTE: As the unmount callback gets called *before* the runloop can
   // be started here when there's no device to be unmounted or
   // the device has already been unmounted, the loop would
   // hang indefinitely until stopped manually otherwise.
-  // This way we don't have to manage state across callbacks
+  // Here we repeatedly run the loop for a given time, and stop
+  // it at some point if it hasn't gotten anywhere, or if there's
+  // nothing to be unmounted, or a dissent has been caught before the run.
+  // This way we don't have to manage state across callbacks.
   MountUtilsLog("[eject]: Starting run loop");
-  CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1, false);
+
+  bool done = false;
+  unsigned int loop_count = 0;
+
+  while (!done) {
+    loop_count++;
+    // See https://developer.apple.com/reference/corefoundation/1541988-cfrunloopruninmode
+    SInt32 status = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.5, false);
+    // Stop starting the runloop once it's been manually stopped
+    if ((status == kCFRunLoopRunStopped) || (status == kCFRunLoopRunFinished)) {
+      done = true;
+    }
+    // Bail out if DADiskUnmount caught a dissent and
+    // thus returned before the runloop even started
+    if (code != MOUNTUTILS_SUCCESS) {
+      MountUtilsLog("[eject]: Runloop dry");
+      done = true;
+    }
+    // Bail out if the runloop is timing out, but not getting anywhere
+    if (loop_count > 10) {
+      MountUtilsLog("[eject]: Runloop stall");
+      code = MOUNTUTILS_ERROR_GENERAL;
+      done = true;
+    }
+  }
 
   // Clean up the session
   MountUtilsLog("[eject]: Releasing session & disk object");

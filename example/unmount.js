@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Copyright 2017 resin.io
  *
@@ -16,20 +17,20 @@
 
 'use strict';
 
-const mountutils = require('.');
-const drive = process.argv[2];
+const mountUtils = require('..');
 
-if (!drive) {
-  console.error(`Usage: ${process.argv[0]} ${process.argv[1]} <drive>`);
+let argv = process.argv.slice(2);
+let disk = argv.shift();
+
+if (!disk) {
+  console.error(`Usage: node example/unmount <disk>`);
   process.exit(1);
 }
 
-console.log(`Unmounting ${drive}`);
+process.env.MOUNTUTILS_DEBUG = true;
 
-mountutils.unmountDisk(drive, (error) => {
-  if (error) {
-    throw error;
-  }
+console.log('Unmounting', disk, '...');
 
-  console.log('Done');
+mountUtils.unmountDisk(disk, function(error) {
+  console.log(error || 'OK');
 });

@@ -23,13 +23,13 @@ let argv = process.argv.slice(2);
 let disk = argv.shift();
 
 if (!disk) {
-  console.error(`Usage: node scripts/unmount ${process.argv[1]} <drive>`);
+  console.error(`Usage: node example/unmount <disk>`);
   process.exit(1);
 }
 
 process.env.MOUNTUTILS_DEBUG = true;
 
-console.log('Ejecting', disk, '...')
+console.log('Unmounting', disk, '...');
 
 mountUtils.unmountDisk(disk, function(error) {
   console.log(error || 'OK');

@@ -37,7 +37,7 @@ enum MOUNTUTILS_RESULT {
 
 void MountUtilsLog(std::string string);
 
-NAN_METHOD(UnmountDisk);
-NAN_METHOD(EjectDisk);
+NAN_METHOD(unmountDisk);
+NAN_METHOD(eject);
 
 #endif  // SRC_MOUNTUTILS_HPP_

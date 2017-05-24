@@ -6,7 +6,9 @@
         "<!(node -e \"require('nan')\")"
       ],
       "sources": [
-        "src/mountutils.cpp"
+        "src/mountutils.cpp",
+        "src/worker-unmount.cpp",
+        "src/worker-eject.cpp"
       ],
       'conditions': [
 

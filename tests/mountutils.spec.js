@@ -28,18 +28,36 @@ describe('MountUtils', function() {
     context('missing / wrong arguments', function() {
 
       specify('throws on missing device', function() {
-        chai.expect( function() {
-          mountutils.unmountDisk( null, function() {})
-        }).to.throw( /must be a string/i )
-      })
+        chai.expect(function() {
+          mountutils.unmountDisk(null, function() {});
+        }).to.throw(/must be a string/i);
+      });
 
       specify('throws on missing callback', function() {
-        chai.expect( function() {
-          mountutils.unmountDisk( 'novalue' )
-        }).to.throw( /must be a function/i )
-      })
+        chai.expect(function() {
+          mountutils.unmountDisk('novalue');
+        }).to.throw(/must be a function/i);
+      });
 
-    })
+    });
+
+    context('invalid device', function() {
+
+      specify('device is a directory', function( done ) {
+        mountutils.unmountDisk( __dirname, function( error ) {
+          chai.expect(error.message).to.match(/Unmount failed/);
+          done();
+        });
+      });
+
+      specify('device is an empty string', function( done ) {
+        mountutils.unmountDisk( '', function( error ) {
+          chai.expect(error.message).to.match(/Unmount failed/);
+          done();
+        });
+      });
+
+    });
 
   });
 
@@ -52,18 +70,36 @@ describe('MountUtils', function() {
     context('missing / wrong arguments', function() {
 
       specify('throws on missing device', function() {
-        chai.expect( function() {
-          mountutils.eject( null, function() {})
-        }).to.throw( /must be a string/i )
-      })
+        chai.expect(function() {
+          mountutils.eject(null, function() {});
+        }).to.throw(/must be a string/i);
+      });
 
       specify('throws on missing callback', function() {
-        chai.expect( function() {
-          mountutils.eject( 'novalue' )
-        }).to.throw( /must be a function/i )
-      })
+        chai.expect(function() {
+          mountutils.eject('novalue');
+        }).to.throw(/must be a function/i);
+      });
 
-    })
+    });
+
+    context('invalid device', function() {
+
+      specify('device is a directory', function( done ) {
+        mountutils.eject( __dirname, function( error ) {
+          chai.expect(error.message).to.match(/Eject failed/);
+          done();
+        });
+      });
+
+      specify('device is an empty string', function( done ) {
+        mountutils.eject( '', function( error ) {
+          chai.expect(error.message).to.match(/Eject failed/);
+          done();
+        });
+      });
+
+    });
 
   });
 

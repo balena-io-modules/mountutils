@@ -162,66 +162,10 @@ void _eject_unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *ctx) {
   }
 }
 
-MOUNTUTILS_RESULT unmount_whole_disk(const char* device) {
+MOUNTUTILS_RESULT unmount_disk(const char* device) {
   return run_cb(device, _unmount_cb);
 }
 
 MOUNTUTILS_RESULT eject_disk(const char* device) {
   return run_cb(device, _eject_unmount_cb);
-}
-
-NAN_METHOD(unmountDisk) {
-  if (!info[1]->IsFunction()) {
-    return Nan::ThrowError("Callback must be a function");
-  }
-
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    return Nan::ThrowError("Device argument must be a string");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
-  MOUNTUTILS_RESULT result =
-    unmount_whole_disk(reinterpret_cast<char *>(*device));
-
-  MountUtilsLog("Unmount complete");
-
-  if (result == MOUNTUTILS_SUCCESS) {
-    YIELD_NOTHING(callback);
-  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
-    YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
-    YIELD_ERROR(callback, "Unmount failed, invalid drive");
-  } else {
-    YIELD_ERROR(callback, "Unmount failed");
-  }
-}
-
-NAN_METHOD(eject) {
-  if (!info[1]->IsFunction()) {
-    return Nan::ThrowError("Callback must be a function");
-  }
-
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    return Nan::ThrowError("Device argument must be a string");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
-  MOUNTUTILS_RESULT result =
-    eject_disk(reinterpret_cast<char *>(*device));
-
-  if (result == MOUNTUTILS_SUCCESS) {
-    YIELD_NOTHING(callback);
-  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
-    YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
-    YIELD_ERROR(callback, "Unmount failed, invalid drive");
-  } else {
-    YIELD_ERROR(callback, "Unmount failed");
-  }
 }

@@ -20,7 +20,7 @@
 #include <errno.h>
 #include "../mountutils.hpp"
 
-void unmount_disk(const char *device_path, v8::Local<v8::Function> callback) {
+MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
   const char *mount_path = NULL;
 
   // Stat the device to make sure it exists
@@ -29,19 +29,21 @@ void unmount_disk(const char *device_path, v8::Local<v8::Function> callback) {
   if (stat(device_path, &stats) != 0) {
     MountUtilsLog("Stat failed");
 
-    v8::Local<v8::Value> argv[1] = {
-      Nan::ErrnoException(errno, "stat", NULL, device_path)
-    };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
-    return;
+    // TODO(jhermsmeier): See TODO below
+    // v8::Local<v8::Value> argv[1] = {
+    //   Nan::ErrnoException(errno, "stat", NULL, device_path)
+    // };
+    // Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return MOUNTUTILS_ERROR_GENERAL;
   } else if (S_ISDIR(stats.st_mode)) {
     MountUtilsLog("Device is a directory");
 
-    v8::Local<v8::Value> argv[1] = {
-      Nan::Error("Invalid device, path is a directory")
-    };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
-    return;
+    // TODO(jhermsmeier): See TODO below
+    // v8::Local<v8::Value> argv[1] = {
+    //   Nan::Error("Invalid device, path is a directory")
+    // };
+    // Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return MOUNTUTILS_ERROR_INVALID_DRIVE;
   }
 
   // Get mountpaths from the device path, as `umount(device)`
@@ -54,11 +56,17 @@ void unmount_disk(const char *device_path, v8::Local<v8::Function> callback) {
 
   if (proc_mounts == NULL) {
     MountUtilsLog("Couldn't read /proc/mounts");
-    v8::Local<v8::Value> argv[1] = {
-      Nan::ErrnoException(errno, "setmntent", NULL, "/proc/mounts")
-    };
-    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
-    return;
+    // TODO(jhermsmeier): Refactor MOUNTUTILS_RESULT into a struct
+    // with error_msg, errno, error_code etc. and set the respective
+    // values on the struct and move creation of proper errors with
+    // the right errno messages etc. into the AsyncWorkers (even better:
+    // create a function which creates the proper error from a
+    // MOUNTUTILS_RESULT struct).
+    // v8::Local<v8::Value> argv[1] = {
+    //   Nan::ErrnoException(errno, "setmntent", NULL, "/proc/mounts")
+    // };
+    // Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    return MOUNTUTILS_ERROR_GENERAL;
   }
 
   while ((mount_entity = getmntent(proc_mounts)) != NULL) {
@@ -75,12 +83,13 @@ void unmount_disk(const char *device_path, v8::Local<v8::Function> callback) {
       if (umount2(mount_entity->mnt_dir, MNT_DETACH) != 0) {
         MountUtilsLog("Unmount failed");
         endmntent(proc_mounts);
-        v8::Local<v8::Value> argv[1] = {
-          Nan::ErrnoException(errno, "umount2", NULL, mount_entity->mnt_dir)
-        };
-        v8::Local<v8::Object> ctx = Nan::GetCurrentContext()->Global();
-        Nan::MakeCallback(ctx, callback, 1, argv);
-        return;
+        // TODO(jhermsmeier): See TODO above
+        // v8::Local<v8::Value> argv[1] = {
+        //   Nan::ErrnoException(errno, "umount2", NULL, mount_entity->mnt_dir)
+        // };
+        // v8::Local<v8::Object> ctx = Nan::GetCurrentContext()->Global();
+        // Nan::MakeCallback(ctx, callback, 1, argv);
+        return MOUNTUTILS_ERROR_GENERAL;
       }
 
       MountUtilsLog("Unmount success");
@@ -90,39 +99,11 @@ void unmount_disk(const char *device_path, v8::Local<v8::Function> callback) {
   MountUtilsLog("Closing /proc/mounts");
   endmntent(proc_mounts);
 
-  Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 0, 0);
-}
-
-NAN_METHOD(unmountDisk) {
-  if (!info[1]->IsFunction()) {
-    return Nan::ThrowTypeError("Callback must be a function");
-  }
-
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    return Nan::ThrowTypeError("Device argument must be a string");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
-  unmount_disk(reinterpret_cast<char *>(*device), callback);
+  return MOUNTUTILS_SUCCESS;
 }
 
 // FIXME: This is just a stub copy of `UnmountDisk()`,
 // and needs implementation!
-NAN_METHOD(eject) {
-  if (!info[1]->IsFunction()) {
-    return Nan::ThrowTypeError("Callback must be a function");
-  }
-
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    return Nan::ThrowTypeError("Device argument must be a string");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
-  unmount_disk(reinterpret_cast<char *>(*device), callback);
+MOUNTUTILS_RESULT eject_disk(const char *device) {
+  return unmount_disk(device);
 }

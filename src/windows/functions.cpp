@@ -520,72 +520,25 @@ MOUNTUTILS_RESULT stringToInteger(char *string, int *out) {
   return MOUNTUTILS_SUCCESS;
 }
 
-NAN_METHOD(unmountDisk) {
-  if (!info[1]->IsFunction()) {
-    return Nan::ThrowError("Callback must be a function");
-  }
-
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    return Nan::ThrowError("Device argument must be a string");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
-  // Get the ID of a \\\\.\\PHYSICALDRIVEN path
-  char *deviceString = reinterpret_cast<char *>(*device);
-  char *deviceIdString = &deviceString[strlen(deviceString) - 1];
+MOUNTUTILS_RESULT unmount_disk(const char *device) {
   int deviceId;
-  if (stringToInteger(deviceIdString, &deviceId) != MOUNTUTILS_SUCCESS) {
-    YIELD_ERROR(callback, "Invalid device");
+  char prefix[18];
+
+  MountUtilsLog(std::string(device));
+
+  int result = sscanf(device, "%17s%i", prefix, &deviceId);
+
+  // Return value of `sscanf` is the number of receiving arguments
+  // successfully assigned; and `0` or `EOF` in case of failure
+  if (result != 2 || result == EOF) {
+    return MOUNTUTILS_ERROR_INVALID_DRIVE;
   }
 
-  MOUNTUTILS_RESULT result = Eject(deviceId);
-
-  if (result == MOUNTUTILS_SUCCESS) {
-    YIELD_NOTHING(callback);
-  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
-    YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
-    YIELD_ERROR(callback, "Unmount failed, invalid drive");
-  } else {
-    YIELD_ERROR(callback, "Unmount failed");
-  }
+  return Eject(deviceId);
 }
 
 // FIXME: This is just a stub copy of `UnmountDisk()`,
 // and needs implementation!
-NAN_METHOD(eject) {
-  if (!info[1]->IsFunction()) {
-    return Nan::ThrowError("Callback must be a function");
-  }
-
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
-
-  if (!info[0]->IsString()) {
-    return Nan::ThrowError("Device argument must be a string");
-  }
-
-  v8::String::Utf8Value device(info[0]->ToString());
-
-  // Get the ID of a \\\\.\\PHYSICALDRIVEN path
-  char *deviceString = reinterpret_cast<char *>(*device);
-  char *deviceIdString = &deviceString[strlen(deviceString) - 1];
-  int deviceId;
-  if (stringToInteger(deviceIdString, &deviceId) != MOUNTUTILS_SUCCESS) {
-    YIELD_ERROR(callback, "Invalid device");
-  }
-
-  MOUNTUTILS_RESULT result = Eject(deviceId);
-
-  if (result == MOUNTUTILS_SUCCESS) {
-    YIELD_NOTHING(callback);
-  } else if (result == MOUNTUTILS_ERROR_ACCESS_DENIED) {
-    YIELD_ERROR(callback, "Unmount failed, access denied");
-  } else if (result == MOUNTUTILS_ERROR_INVALID_DRIVE) {
-    YIELD_ERROR(callback, "Unmount failed, invalid drive");
-  } else {
-    YIELD_ERROR(callback, "Unmount failed");
-  }
+MOUNTUTILS_RESULT eject_disk(const char *device) {
+  return unmount_disk(device);
 }

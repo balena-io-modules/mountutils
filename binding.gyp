@@ -5,18 +5,19 @@
       "include_dirs" : [
         "<!(node -e \"require('nan')\")"
       ],
+      "sources": [
+        "src/mountutils.cpp"
+      ],
       'conditions': [
 
         [ 'OS=="linux"', {
           "sources": [
-            "src/mountutils.cpp",
             "src/linux/functions.cpp"
           ],
         } ],
 
         [ 'OS=="win"', {
           "sources": [
-            "src/mountutils.cpp",
             "src/windows/functions.cpp"
           ],
           "libraries": [
@@ -27,7 +28,6 @@
 
         [ 'OS=="mac"', {
           "sources": [
-            "src/mountutils.cpp",
             "src/darwin/functions.cpp"
           ],
           "link_settings": {

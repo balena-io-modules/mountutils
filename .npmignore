@@ -2,6 +2,7 @@
 .*
 *.md
 *.log
+*.yml
 
 # Directories
 doc

@@ -170,7 +170,7 @@ MOUNTUTILS_RESULT eject_disk(const char* device) {
   return run_cb(device, _eject_unmount_cb);
 }
 
-NAN_METHOD(UnmountDisk) {
+NAN_METHOD(unmountDisk) {
   if (!info[1]->IsFunction()) {
     return Nan::ThrowError("Callback must be a function");
   }
@@ -199,7 +199,7 @@ NAN_METHOD(UnmountDisk) {
   }
 }
 
-NAN_METHOD(EjectDisk) {
+NAN_METHOD(eject) {
   if (!info[1]->IsFunction()) {
     return Nan::ThrowError("Callback must be a function");
   }

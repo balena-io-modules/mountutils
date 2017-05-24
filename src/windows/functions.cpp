@@ -520,7 +520,7 @@ MOUNTUTILS_RESULT stringToInteger(char *string, int *out) {
   return MOUNTUTILS_SUCCESS;
 }
 
-NAN_METHOD(UnmountDisk) {
+NAN_METHOD(unmountDisk) {
   if (!info[1]->IsFunction()) {
     return Nan::ThrowError("Callback must be a function");
   }
@@ -556,7 +556,7 @@ NAN_METHOD(UnmountDisk) {
 
 // FIXME: This is just a stub copy of `UnmountDisk()`,
 // and needs implementation!
-NAN_METHOD(EjectDisk) {
+NAN_METHOD(eject) {
   if (!info[1]->IsFunction()) {
     return Nan::ThrowError("Callback must be a function");
   }

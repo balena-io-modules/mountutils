@@ -17,8 +17,9 @@
 #include <DiskArbitration/DiskArbitration.h>
 #include "../mountutils.hpp"
 
-static bool unmount_done = false;
-static MOUNTUTILS_RESULT code = MOUNTUTILS_SUCCESS;
+struct RunLoopContext {
+  MOUNTUTILS_RESULT code = MOUNTUTILS_SUCCESS;
+};
 
 MOUNTUTILS_RESULT translate_dissenter(DADissenterRef dissenter) {
   if (dissenter) {
@@ -38,115 +39,36 @@ MOUNTUTILS_RESULT translate_dissenter(DADissenterRef dissenter) {
   }
 }
 
-void unmount_callback(DADiskRef disk, DADissenterRef dissenter, void *context) {
-  MountUtilsLog("Unmount callback called");
-  unmount_done = true;
-  CFRunLoopRef loop = (CFRunLoopRef)context;
+MOUNTUTILS_RESULT run_cb(const char* device, DADiskUnmountCallback callback) {
+  RunLoopContext context;
+  void *ctx = &context;
 
-  if (dissenter != NULL) {
-    MountUtilsLog("Dissenter returned");
-    code = translate_dissenter(dissenter);
-  }
-
-  MountUtilsLog("Stopping run loop from callback");
-  CFRunLoopStop(loop);
-}
-
-MOUNTUTILS_RESULT unmount_whole_disk(const char *device) {
-  MountUtilsLog("Creating session");
-
+  // Create a session object
+  MountUtilsLog("Creating DA session");
   DASessionRef session = DASessionCreate(kCFAllocatorDefault);
+
   if (session == NULL) {
     MountUtilsLog("Session couldn't be created");
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
-  MountUtilsLog("Starting run loop");
-  CFRunLoopRef loop = CFRunLoopGetCurrent();
-  DASessionScheduleWithRunLoop(session, loop, kCFRunLoopDefaultMode);
-  DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault,
-                                           session,
-                                           device);
-
-  MountUtilsLog("Unmounting disk");
-
-  DADiskUnmount(disk,
-                kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
-                unmount_callback,
-                reinterpret_cast<void *>(loop));
-
-  if (!unmount_done) {
-    MountUtilsLog("Stopping run loop");
-    CFRunLoopRun();
-    DASessionUnscheduleFromRunLoop(session, loop, kCFRunLoopDefaultMode);
-    CFRelease(session);
-  }
-
-  return code;
-}
-
-void _eject_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
-  MountUtilsLog("[eject]: Eject callback");
-  if (dissenter) {
-    MountUtilsLog("[eject]: Eject dissenter");
-    code = translate_dissenter(dissenter);
-  } else {
-    MountUtilsLog("[eject]: Eject success");
-    code = MOUNTUTILS_SUCCESS;
-  }
-  CFRunLoopRef run_loop = (CFRunLoopRef)context;
-  CFRunLoopStop(run_loop);
-}
-
-void _unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *context) {
-  MountUtilsLog("[eject]: Unmount callback");
-  CFRunLoopRef run_loop = (CFRunLoopRef) context;
-  if (dissenter) {
-    MountUtilsLog("[eject]: Unmount dissenter");
-    code = translate_dissenter(dissenter);
-    CFRunLoopRef run_loop = (CFRunLoopRef)context;
-    CFRunLoopStop(run_loop);
-  } else {
-    MountUtilsLog("[eject]: Unmount success");
-    MountUtilsLog("[eject]: Ejecting...");
-    DADiskEject(disk,
-      kDADiskEjectOptionDefault,
-      _eject_cb,
-      reinterpret_cast<void *>(run_loop));
-  }
-}
-
-MOUNTUTILS_RESULT eject_disk(const char* device) {
-  // Reset the result code
-  code = MOUNTUTILS_SUCCESS;
-
-  // Create a session object
-  MountUtilsLog("[eject]: Creating DA session");
-  DASessionRef session = DASessionCreate(kCFAllocatorDefault);
-
-  if (session == NULL) {
-    MountUtilsLog("[eject]: Session couldn't be created");
-    return MOUNTUTILS_ERROR_GENERAL;
-  }
-
-  // Get a reference to the current thread's runloop
-  CFRunLoopRef run_loop = CFRunLoopGetCurrent();
-
   // Get a disk object from the disk path
-  MountUtilsLog("[eject]: Getting disk object");
+  MountUtilsLog("Getting disk object");
   DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault,
     session, device);
 
   // Unmount, and then eject from the unmount callback
-  MountUtilsLog("[eject]: Unmounting");
+  MountUtilsLog("Unmounting");
   DADiskUnmount(disk,
                 kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
-                _unmount_cb,
-                reinterpret_cast<void *>(run_loop));
+                callback,
+                ctx);
 
   // Schedule a disk arbitration session
-  MountUtilsLog("[eject]: Schedule session on run loop");
-  DASessionScheduleWithRunLoop(session, run_loop, kCFRunLoopDefaultMode);
+  MountUtilsLog("Schedule session on run loop");
+  DASessionScheduleWithRunLoop(session,
+    CFRunLoopGetCurrent(),
+    kCFRunLoopDefaultMode);
 
   // Start the run loop: Run with a timeout of 500ms (0.5s),
   // and don't terminate after only handling one resource.
@@ -158,7 +80,7 @@ MOUNTUTILS_RESULT eject_disk(const char* device) {
   // it at some point if it hasn't gotten anywhere, or if there's
   // nothing to be unmounted, or a dissent has been caught before the run.
   // This way we don't have to manage state across callbacks.
-  MountUtilsLog("[eject]: Starting run loop");
+  MountUtilsLog("Starting run loop");
 
   bool done = false;
   unsigned int loop_count = 0;
@@ -173,24 +95,79 @@ MOUNTUTILS_RESULT eject_disk(const char* device) {
     }
     // Bail out if DADiskUnmount caught a dissent and
     // thus returned before the runloop even started
-    if (code != MOUNTUTILS_SUCCESS) {
-      MountUtilsLog("[eject]: Runloop dry");
+    if (context.code != MOUNTUTILS_SUCCESS) {
+      MountUtilsLog("Runloop dry");
       done = true;
     }
     // Bail out if the runloop is timing out, but not getting anywhere
     if (loop_count > 10) {
-      MountUtilsLog("[eject]: Runloop stall");
-      code = MOUNTUTILS_ERROR_GENERAL;
+      MountUtilsLog("Runloop stall");
+      context.code = MOUNTUTILS_ERROR_GENERAL;
       done = true;
     }
   }
 
   // Clean up the session
-  MountUtilsLog("[eject]: Releasing session & disk object");
-  DASessionUnscheduleFromRunLoop(session, run_loop, kCFRunLoopDefaultMode);
+  MountUtilsLog("Releasing session & disk object");
+  DASessionUnscheduleFromRunLoop(session,
+    CFRunLoopGetCurrent(),
+    kCFRunLoopDefaultMode);
   CFRelease(session);
 
-  return code;
+  MOUNTUTILS_RESULT result = context.code;
+  return result;
+}
+
+void _unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *ctx) {
+  MountUtilsLog("[unmount]: Unmount callback");
+  RunLoopContext *context = reinterpret_cast<RunLoopContext*>(ctx);
+  if (dissenter) {
+    MountUtilsLog("[unmount]: Unmount dissenter");
+    context->code = translate_dissenter(dissenter);
+  } else {
+    MountUtilsLog("[unmount]: Unmount success");
+    context->code = MOUNTUTILS_SUCCESS;
+  }
+  CFRunLoopStop(CFRunLoopGetCurrent());
+}
+
+void _eject_cb(DADiskRef disk, DADissenterRef dissenter, void *ctx) {
+  MountUtilsLog("[eject]: Eject callback");
+  RunLoopContext *context = reinterpret_cast<RunLoopContext*>(ctx);
+  if (dissenter) {
+    MountUtilsLog("[eject]: Eject dissenter");
+    context->code = translate_dissenter(dissenter);
+  } else {
+    MountUtilsLog("[eject]: Eject success");
+    context->code = MOUNTUTILS_SUCCESS;
+  }
+  CFRunLoopStop(CFRunLoopGetCurrent());
+}
+
+void _eject_unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *ctx) {
+  MountUtilsLog("[eject]: Unmount callback");
+  RunLoopContext *context = reinterpret_cast<RunLoopContext*>(ctx);
+  if (dissenter) {
+    MountUtilsLog("[eject]: Unmount dissenter");
+    context->code = translate_dissenter(dissenter);
+    CFRunLoopStop(CFRunLoopGetCurrent());
+  } else {
+    MountUtilsLog("[eject]: Unmount success");
+    MountUtilsLog("[eject]: Ejecting...");
+    context->code = MOUNTUTILS_SUCCESS;
+    DADiskEject(disk,
+      kDADiskEjectOptionDefault,
+      _eject_cb,
+      ctx);
+  }
+}
+
+MOUNTUTILS_RESULT unmount_whole_disk(const char* device) {
+  return run_cb(device, _unmount_cb);
+}
+
+MOUNTUTILS_RESULT eject_disk(const char* device) {
+  return run_cb(device, _eject_unmount_cb);
 }
 
 NAN_METHOD(UnmountDisk) {

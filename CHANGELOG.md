@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.2.0 - 2017-05-30
+
+### Changed
+
+- Use `Nan::AsyncWorker` to avoid blocking the main thread
+- Fix global state on Mac OS causing improper return values
+
 ## v1.1.0 - 2017-05-11
 
 ### Changed

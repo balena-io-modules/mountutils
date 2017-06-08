@@ -39,8 +39,7 @@ Documentation
 | device | <code>String</code> | device |
 | callback | <code>function</code> | callback (error) |
 
-**Example**
-
+**Example**  
 ```js
 // macOS
 const drive = '/dev/disk2';

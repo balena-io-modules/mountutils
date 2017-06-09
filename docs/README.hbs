@@ -4,8 +4,8 @@ mountutils
 [![npm](https://img.shields.io/npm/v/mountutils.svg?style=flat-square)](https://npmjs.com/package/mountutils)
 [![npm license](https://img.shields.io/npm/l/mountutils.svg?style=flat-square)](https://npmjs.com/package/mountutils)
 [![npm downloads](https://img.shields.io/npm/dm/mountutils.svg?style=flat-square)](https://npmjs.com/package/mountutils)
-[![Travis CI status](https://img.shields.io/travis/resin-io-modules/mountutils/master.svg?style=flat-square)](https://travis-ci.org/resin-io-modules/mountutils)
-[![AppVeyor status](https://img.shields.io/appveyor/ci/resin-io/mountutils/master.svg?style=flat-square)](https://ci.appveyor.com/project/resin-io/mountutils/branch/master)
+[![Travis CI status](https://img.shields.io/travis/resin-io-modules/mountutils/master.svg?style=flat-square&label=linux%20|%20mac)](https://travis-ci.org/resin-io-modules/mountutils/branches)
+[![AppVeyor status](https://img.shields.io/appveyor/ci/resin-io/mountutils/master.svg?style=flat-square&label=windows)](https://ci.appveyor.com/project/resin-io/mountutils/branch/master)
 
 > Cross platform mount related utilities
 

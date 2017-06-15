@@ -51,11 +51,7 @@
 
 module.exports = require('bindings')({
   bindings: 'MountUtils',
-
-/* eslint-disable camelcase */
-
+  /* eslint-disable camelcase */
   module_root: __dirname
-
-/* eslint-enable camelcase */
-
+  /* eslint-enable camelcase */
 });

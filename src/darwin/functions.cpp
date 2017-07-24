@@ -39,7 +39,8 @@ MOUNTUTILS_RESULT translate_dissenter(DADissenterRef dissenter) {
   }
 }
 
-MOUNTUTILS_RESULT run_cb(const char* device, DADiskUnmountCallback callback) {
+MOUNTUTILS_RESULT
+run_cb(const char* device, DADiskUnmountCallback callback, size_t times) {
   RunLoopContext context;
   void *ctx = &context;
 
@@ -102,7 +103,7 @@ MOUNTUTILS_RESULT run_cb(const char* device, DADiskUnmountCallback callback) {
     // Bail out if the runloop is timing out, but not getting anywhere
     if (loop_count > 10) {
       MountUtilsLog("Runloop stall");
-      context.code = MOUNTUTILS_ERROR_GENERAL;
+      context.code = MOUNTUTILS_ERROR_AGAIN;
       done = true;
     }
   }
@@ -113,6 +114,11 @@ MOUNTUTILS_RESULT run_cb(const char* device, DADiskUnmountCallback callback) {
     CFRunLoopGetCurrent(),
     kCFRunLoopDefaultMode);
   CFRelease(session);
+
+  if (context.code == MOUNTUTILS_ERROR_AGAIN && times < 5) {
+    MountUtilsLog("Retrying...");
+    return run_cb(device, callback, times + 1);
+  }
 
   MOUNTUTILS_RESULT result = context.code;
   return result;
@@ -163,9 +169,9 @@ void _eject_unmount_cb(DADiskRef disk, DADissenterRef dissenter, void *ctx) {
 }
 
 MOUNTUTILS_RESULT unmount_disk(const char* device) {
-  return run_cb(device, _unmount_cb);
+  return run_cb(device, _unmount_cb, 0);
 }
 
 MOUNTUTILS_RESULT eject_disk(const char* device) {
-  return run_cb(device, _eject_unmount_cb);
+  return run_cb(device, _eject_unmount_cb, 0);
 }

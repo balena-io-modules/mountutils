@@ -233,12 +233,26 @@ BOOL EjectRemovableVolume(HANDLE volume) {
     return FALSE;
   }
 
-  return DeviceIoControl(volume,
-                         IOCTL_STORAGE_EJECT_MEDIA,
-                         NULL, 0,
-                         NULL, 0,
-                         &bytesReturned,
-                         NULL);
+  size_t retries = 5;
+
+  while (retries > 0) {
+    const BOOL result = DeviceIoControl(volume,
+                                        IOCTL_STORAGE_EJECT_MEDIA,
+                                        NULL, 0,
+                                        NULL, 0,
+                                        &bytesReturned,
+                                        NULL);
+    if (result) {
+      MountUtilsLog("Volume ejected");
+      return TRUE;
+    }
+
+    MountUtilsLog("Retrying ejection");
+    Sleep(500);
+    retries--;
+  }
+
+  return FALSE;
 }
 
 MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {

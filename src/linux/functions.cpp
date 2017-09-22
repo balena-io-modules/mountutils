@@ -28,6 +28,7 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
 
   if (stat(device_path, &stats) != 0) {
     MountUtilsLog("Stat failed");
+    MountUtilsLog(strerror(errno));
 
     // TODO(jhermsmeier): See TODO below
     // v8::Local<v8::Value> argv[1] = {
@@ -82,6 +83,7 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
       // and only actually unmounting when the mount point ceases to be busy
       if (umount2(mount_entity->mnt_dir, MNT_DETACH) != 0) {
         MountUtilsLog("Unmount failed");
+        MountUtilsLog(strerror(errno));
         endmntent(proc_mounts);
         // TODO(jhermsmeier): See TODO above
         // v8::Local<v8::Value> argv[1] = {

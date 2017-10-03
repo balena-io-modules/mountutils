@@ -1,11 +1,6 @@
 mountutils
 ==========
 
-[![npm](https://img.shields.io/npm/v/mountutils.svg?style=flat-square)](https://npmjs.com/package/mountutils)
-[![npm license](https://img.shields.io/npm/l/mountutils.svg?style=flat-square)](https://npmjs.com/package/mountutils)
-[![npm downloads](https://img.shields.io/npm/dm/mountutils.svg?style=flat-square)](https://npmjs.com/package/mountutils)
-[![Travis CI status](https://img.shields.io/travis/resin-io-modules/mountutils/master.svg?style=flat-square&label=linux%20|%20mac)](https://travis-ci.org/resin-io-modules/mountutils/branches)
-[![AppVeyor status](https://img.shields.io/appveyor/ci/resin-io/mountutils/master.svg?style=flat-square&label=windows)](https://ci.appveyor.com/project/resin-io/mountutils/branch/master)
 
 > Cross platform mount related utilities
 
@@ -30,16 +25,16 @@ Documentation
 <a name="module_mountutils.unmountDisk"></a>
 
 ### mountutils.unmountDisk(device, callback)
-**Kind**: static method of <code>[mountutils](#module_mountutils)</code>  
-**Summary**: Unmount a whole disk  
-**Access**: public  
+**Kind**: static method of <code>[mountutils](#module_mountutils)</code>
+**Summary**: Unmount a whole disk
+**Access**: public
 
 | Param | Type | Description |
 | --- | --- | --- |
 | device | <code>String</code> | device |
 | callback | <code>function</code> | callback (error) |
 
-**Example**  
+**Example**
 ```js
 // macOS
 const drive = '/dev/disk2';

@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## v1.2.2 - 2017-08-28
 
+## v1.3.0 - 2017-10-13
+
+* Chore(ci): Add CI deployment scripts [Jonas Hermsmeier]
+* Feat(package): Add prebuilds for native bindings [Jonas Hermsmeier]
+* Chore(appveyor): Use VS2015 base image [Jonas Hermsmeier]
+* Upgrade(package): Update dependencies [Jonas Hermsmeier]
+
 ### Changed
 
 - Retry ejection various times before giving up on Windows

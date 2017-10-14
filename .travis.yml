@@ -30,7 +30,7 @@ notifications:
 deploy:
   skip_cleanup: true
   provider: script
-  script: scripts/prebuild-publish.sh
+  script: ci/prebuild-publish.sh
   on:
     tags: true
     branch: master

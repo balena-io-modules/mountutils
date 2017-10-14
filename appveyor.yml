@@ -29,4 +29,4 @@ test_script:
   - cmd: npm test
 
 deploy_script:
-  - scripts\prebuild-publish.bat
+  - ci\prebuild-publish.bat

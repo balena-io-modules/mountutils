@@ -19,6 +19,13 @@ env:
     - CCACHE_COMPRESS=1
     - CC="clang"
     - CXX="clang++"
+  matrix:
+    - TARGET_ARCH=x64
+    - TARGET_ARCH=x86
+matrix:
+  exclude:
+    - os: osx
+      env: TARGET_ARCH=x86
 addons:
   apt:
     sources:

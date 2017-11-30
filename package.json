@@ -29,7 +29,7 @@
     "lint": "npm run lint-js && npm run lint-cpp",
     "test": "npm run lint && mocha tests -R spec",
     "install": "prebuild-install || node-gyp rebuild",
-    "prebuild": "prebuild --all --strip"
+    "prebuild-release": "prebuild --all --strip"
   },
   "author": "Juan Cruz Viotti <juan@resin.io>",
   "license": "Apache-2.0",

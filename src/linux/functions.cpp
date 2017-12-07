@@ -80,7 +80,9 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
       // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
       // making the mount point unavailable for new accesses,
       // and only actually unmounting when the mount point ceases to be busy
-      if (umount2(mount_entity->mnt_dir, MNT_DETACH) != 0) {
+      int code = umount2(mount_entity->mnt_dir, MNT_DETACH);
+      printf("ERROR CODE: %i\n", code);
+      if (code != 0) {
         MountUtilsLog("Unmount failed");
         endmntent(proc_mounts);
         // TODO(jhermsmeier): See TODO above

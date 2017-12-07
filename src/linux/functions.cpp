@@ -83,6 +83,7 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
       int code = umount2(mount_entity->mnt_dir, MNT_DETACH);
       printf("ERROR CODE: %i\n", code);
       if (code != 0) {
+        perror("umount2");
         MountUtilsLog("Unmount failed");
         endmntent(proc_mounts);
         // TODO(jhermsmeier): See TODO above

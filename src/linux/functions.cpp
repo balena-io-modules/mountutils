@@ -22,6 +22,7 @@
 
 MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
   const char *mount_path = NULL;
+  std::vector<std::string> mount_dirs = {};
 
   // Stat the device to make sure it exists
   struct stat stats;
@@ -71,35 +72,71 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
 
   while ((mount_entity = getmntent(proc_mounts)) != NULL) {
     mount_path = mount_entity->mnt_fsname;
-
-    MountUtilsLog(std::string("Mount point found: ") + std::string(mount_path));
-
     if (strncmp(mount_path, device_path, strlen(device_path)) == 0) {
-      MountUtilsLog("Mount point belongs to drive");
-
-      // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
-      // making the mount point unavailable for new accesses,
-      // and only actually unmounting when the mount point ceases to be busy
-      if (umount2(mount_entity->mnt_dir, MNT_DETACH) != 0) {
-        MountUtilsLog("Unmount failed");
-        endmntent(proc_mounts);
-        // TODO(jhermsmeier): See TODO above
-        // v8::Local<v8::Value> argv[1] = {
-        //   Nan::ErrnoException(errno, "umount2", NULL, mount_entity->mnt_dir)
-        // };
-        // v8::Local<v8::Object> ctx = Nan::GetCurrentContext()->Global();
-        // Nan::MakeCallback(ctx, callback, 1, argv);
-        return MOUNTUTILS_ERROR_GENERAL;
-      }
-
-      MountUtilsLog("Unmount success");
+      MountUtilsLog("Mount point " + std::string(mount_path) +
+        " belongs to drive " + std::string(device_path));
+      mount_dirs.push_back(std::string(mount_entity->mnt_dir));
     }
   }
 
   MountUtilsLog("Closing /proc/mounts");
   endmntent(proc_mounts);
 
-  return MOUNTUTILS_SUCCESS;
+  // Use umount2() with the MNT_DETACH flag, which performs a lazy unmount;
+  // making the mount point unavailable for new accesses,
+  // and only actually unmounting when the mount point ceases to be busy
+  // TODO(jhermsmeier): See TODO above
+  // v8::Local<v8::Value> argv[1] = {
+  //   Nan::ErrnoException(errno, "umount2", NULL, mount_entity->mnt_dir)
+  // };
+  // v8::Local<v8::Object> ctx = Nan::GetCurrentContext()->Global();
+  // Nan::MakeCallback(ctx, callback, 1, argv);
+
+  size_t unmounts = 0;
+  MOUNTUTILS_RESULT result_code = MOUNTUTILS_SUCCESS;
+
+  for (std::string mount_dir : mount_dirs) {
+    MountUtilsLog("Unmounting " + mount_dir + "...");
+
+    mount_path = mount_dir.c_str();
+
+    if (umount2(mount_path, MNT_EXPIRE) != 0) {
+      MountUtilsLog("Unmount MNT_EXPIRE " + mount_dir + ": EAGAIN");
+      if (umount2(mount_path, MNT_EXPIRE) != 0) {
+        MountUtilsLog("Unmount MNT_EXPIRE " + mount_dir + " failed: " +
+          std::string(strerror(errno)));
+      } else {
+        MountUtilsLog("Unmount " + mount_dir + ": success");
+        unmounts++;
+        continue;
+      }
+    } else {
+      MountUtilsLog("Unmount " + mount_dir + ": success");
+      unmounts++;
+      continue;
+    }
+
+    if (umount2(mount_path, MNT_DETACH) != 0) {
+      MountUtilsLog("Unmount MNT_DETACH " + mount_dir + " failed: " +
+        std::string(strerror(errno)));
+    } else {
+      MountUtilsLog("Unmount " + mount_dir + ": success");
+      unmounts++;
+      continue;
+    }
+
+    if (umount2(mount_path, MNT_FORCE) != 0) {
+      MountUtilsLog("Unmount MNT_FORCE " + mount_dir + " failed: " +
+        std::string(strerror(errno)));
+    } else {
+      MountUtilsLog("Unmount " + mount_dir + ": success");
+      unmounts++;
+      continue;
+    }
+  }
+
+  return unmounts == mount_dirs.size() ?
+    MOUNTUTILS_SUCCESS : MOUNTUTILS_ERROR_GENERAL;
 }
 
 // FIXME: This is just a stub copy of `UnmountDisk()`,

@@ -10,6 +10,17 @@
         "src/worker-unmount.cpp",
         "src/worker-eject.cpp"
       ],
+      "msvs_settings": {
+        "VCLinkerTool": {
+          "SetChecksum": "true"
+        },
+        "VCCLCompilerTool": {
+          "ExceptionHandling": 1,
+          "AdditionalOptions": [
+            "/EHsc"
+          ]
+        }
+      },
       'conditions': [
 
         [ 'OS=="linux"', {
@@ -23,8 +34,9 @@
             "src/windows/functions.cpp"
           ],
           "libraries": [
-            "-luser32.lib",
-            "-lsetupapi.lib",
+            "-lKernel32.lib",
+            "-lSetupAPI.lib",
+            "-lCfgmgr32.lib"
           ],
         } ],
 

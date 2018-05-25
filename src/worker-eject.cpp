@@ -48,7 +48,7 @@ class EjectWorker : public Nan::AsyncWorker {
   void HandleOKCallback() {
     Nan::HandleScope scope;
     v8::Local<v8::Value> argv[] = { Nan::Null() };
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
   }
 
  private:

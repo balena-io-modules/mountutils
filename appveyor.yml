@@ -12,7 +12,7 @@ cache:
 
 environment:
   global:
-    nodejs_version: 6
+    nodejs_version: 10
   matrix:
     - TARGET_ARCH: x64
     - TARGET_ARCH: x86

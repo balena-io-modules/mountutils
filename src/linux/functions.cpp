@@ -49,7 +49,9 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
 
   // Get mountpaths from the device path, as `umount(device)`
   // has been removed in Linux 2.3+
-  struct mntent *mount_entity;
+  struct mntent *mnt_p, data;
+  // See https://github.com/RasPlex/aufs-utils/commit/2d1a37468cdc1f9c779cbf22267c5ae491a44f8e
+  char mnt_buf[4096 + 1024];
   FILE *proc_mounts;
 
   MountUtilsLog("Reading /proc/mounts");
@@ -70,12 +72,12 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
     return MOUNTUTILS_ERROR_GENERAL;
   }
 
-  while ((mount_entity = getmntent(proc_mounts)) != NULL) {
-    mount_path = mount_entity->mnt_fsname;
+  while ((mnt_p = getmntent_r(proc_mounts, &data, mnt_buf, sizeof(mnt_buf)))) {
+    mount_path = mnt_p->mnt_fsname;
     if (strncmp(mount_path, device_path, strlen(device_path)) == 0) {
       MountUtilsLog("Mount point " + std::string(mount_path) +
         " belongs to drive " + std::string(device_path));
-      mount_dirs.push_back(std::string(mount_entity->mnt_dir));
+      mount_dirs.push_back(std::string(mnt_p->mnt_dir));
     }
   }
 
@@ -87,7 +89,7 @@ MOUNTUTILS_RESULT unmount_disk(const char *device_path) {
   // and only actually unmounting when the mount point ceases to be busy
   // TODO(jhermsmeier): See TODO above
   // v8::Local<v8::Value> argv[1] = {
-  //   Nan::ErrnoException(errno, "umount2", NULL, mount_entity->mnt_dir)
+  //   Nan::ErrnoException(errno, "umount2", NULL, mnt_p->mnt_dir)
   // };
   // v8::Local<v8::Object> ctx = Nan::GetCurrentContext()->Global();
   // Nan::MakeCallback(ctx, callback, 1, argv);

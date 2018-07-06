@@ -1,5 +1,7 @@
 language: node_js
 node_js:
+  - 10
+  - 8
   - 6
 os:
   - linux
@@ -39,5 +41,6 @@ deploy:
   provider: script
   script: scripts/prebuild-publish.sh
   on:
+    node: 10
     tags: true
     branch: master

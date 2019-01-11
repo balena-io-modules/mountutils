@@ -41,6 +41,14 @@
         } ],
 
         [ 'OS=="mac"', {
+          "xcode_settings": {
+            "OTHER_CPLUSPLUSFLAGS": [
+              "-stdlib=libc++"
+            ],
+            "OTHER_LDFLAGS": [
+              "-stdlib=libc++"
+            ]
+          },
           "sources": [
             "src/darwin/functions.cpp"
           ],

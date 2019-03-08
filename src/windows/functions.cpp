@@ -233,9 +233,11 @@ BOOL EjectRemovableVolume(HANDLE volume) {
     return FALSE;
   }
 
-  size_t retries = 5;
-
-  while (retries > 0) {
+  for (size_t tries = 0; tries < 5; tries++) {
+    if (tries != 0) {
+      MountUtilsLog("Retrying ejection");
+      Sleep(500);
+    }
     const BOOL result = DeviceIoControl(volume,
                                         IOCTL_STORAGE_EJECT_MEDIA,
                                         NULL, 0,
@@ -246,10 +248,6 @@ BOOL EjectRemovableVolume(HANDLE volume) {
       MountUtilsLog("Volume ejected");
       return TRUE;
     }
-
-    MountUtilsLog("Retrying ejection");
-    Sleep(500);
-    retries--;
   }
 
   return FALSE;
@@ -270,6 +268,10 @@ MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
   // attempt but works on the second attempt.
   // See https://www.codeproject.com/articles/13839/how-to-prepare-a-usb-drive-for-safe-removal
   for (size_t tries = 0; tries < 3; tries++) {
+    if (tries != 0) {
+      MountUtilsLog("Retrying");
+      Sleep(500);
+    }
     MountUtilsLog("Ejecting device instance");
     status = CM_Request_Device_Eject(deviceInstance,
                                      &vetoType,
@@ -313,10 +315,6 @@ MOUNTUTILS_RESULT EjectFixedDriveByDeviceNumber(ULONG deviceNumber) {
       MountUtilsLog("Couldn't eject device instance");
       return MOUNTUTILS_ERROR_GENERAL;
     }
-
-
-    MountUtilsLog("Retrying");
-    Sleep(500);
   }
 
   return MOUNTUTILS_ERROR_GENERAL;
@@ -478,6 +476,10 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
         // the filesystem is ejected, but the drive letter remains assigned,
         // which gets fixed if you retry again.
         for (size_t times = 0; times < 3; times++) {
+          if (times != 0) {
+            MountUtilsLog("Retrying");
+            Sleep(500);
+          }
           MountUtilsLog("Ejecting drive letter");
           result = EjectDriveLetter(currentDriveLetter);
 
@@ -493,9 +495,6 @@ MOUNTUTILS_RESULT Eject(ULONG deviceNumber) {
             MountUtilsLog("Couldn't eject drive letter");
             return result;
           }
-
-          MountUtilsLog("Retrying");
-          Sleep(500);
         }
       }
 

@@ -64,7 +64,7 @@ NAN_METHOD(eject) {
     return Nan::ThrowError("Device must be a string");
   }
 
-  Nan::Utf8String device(info[0]->ToString());
+  Nan::Utf8String device(Nan::To<v8::String>(info[0]).ToLocalChecked());
   std::string device_path(*device);
   Nan::Callback *callback = new Nan::Callback(info[1].As<v8::Function>());
 

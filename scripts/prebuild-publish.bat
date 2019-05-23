@@ -1,7 +1,7 @@
 @echo off
 
-if %APPVEYOR_REPO_BRANCH% == master (
-  if %GITHUB_TOKEN% neq "" (
+IF "%APPVEYOR_REPO_BRANCH%"=="master" (
+  IF "%GITHUB_TOKEN%" NEQ "" (
     npm run prebuild-release -- -u %GITHUB_TOKEN%
   )
 )

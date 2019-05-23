@@ -27,7 +27,7 @@
     "lint-js": "eslint *.js",
     "lint-cpp": "cpplint --recursive src",
     "lint": "npm run lint-js && npm run lint-cpp",
-    "test": "npm run lint && mocha tests -R spec",
+    "test": "mocha tests -R spec",
     "install": "prebuild-install || node-gyp rebuild",
     "prebuild-release": "prebuild --all --strip"
   },

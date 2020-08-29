@@ -24,6 +24,11 @@ Debug mode
 You can enable debug mode by setting the `MOUNTUTILS_DEBUG` environment
 variable.
 
+Mounting and Unmounting Block Devices Requires Elevated Permissions
+-------------------------------------------------------------------
+
+For more information on how Balena Etcher forks a priveleged process to write SD cards, see https://github.com/balena-io-modules/mountutils/issues/78
+
 Documentation
 -------------
 

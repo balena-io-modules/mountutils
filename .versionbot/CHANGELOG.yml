@@ -1,5 +1,15 @@
+- commits:
+    - subject: Add versionbot changelog
+      hash: 416b5556307a66ab7362efbb0e19930ad63a05ed
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Alexis Svinartchouk
+  version: 1.3.20
+  date: 2020-11-30T18:23:10.530Z
 - version: 1.3.19
-  date: 2019-05-23T18:32:12Z
+  date: 2019-05-23T18:32:12.000Z
   commits:
     - hash: 4d2ea2b688c414953efea19beb2bfe70f33caa52
       author: Gergely Imreh
@@ -7,9 +17,9 @@
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
       subject: 'housekeeping: add CODEOWNERS'
-      body:
+      body: null
 - version: 1.3.18
-  date: 2019-05-23T17:08:26Z
+  date: 2019-05-23T17:08:26.000Z
   commits:
     - hash: 8b929ead7f9d4067422c1861e94305f3aa12f9f7
       author: Gergely Imreh
@@ -17,14 +27,14 @@
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
       subject: 'dependencies: Update code to be ready for Node 12'
-      body:
+      body: null
     - hash: 4349c0716c1d33f1e62f06f3ad0f774a3c2fadd0
       author: Gergely Imreh
       footers:
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
       subject: 'ci: update appveyor and travis setting for extra Node versions'
-      body:
+      body: null
     - hash: 34b34a1c9a265d67accbeb2fb82ec0836d1b28a9
       author: Gergely Imreh
       footers:
@@ -44,25 +54,25 @@
         It's to avoid `"" was unexpected at this time.` error in Appveyor
         running this scrpipt.
 - version: 1.3.17
-  date: 2019-03-20T18:07:28Z
+  date: 2019-03-20T18:07:28.000Z
   commits:
     - hash: 685e29abc6cc081937d8a56682ec92c1f6081fa7
       author: Alexis Svinartchouk
       footers:
         change-type: patch
       subject: Remove useless sleeps and wrong debug "Retrying" messages
-      body:
+      body: null
 - version: 1.3.16
-  date: 2019-01-11T14:45:22Z
+  date: 2019-01-11T14:45:22.000Z
   commits:
     - hash: 97ec554bb0ee3d9a7c6ce26b8ce1db71ee546b23
       author: Alexis Svinartchouk
       footers:
         change-type: patch
       subject: Fix build on Xcode 10.1
-      body:
+      body: null
 - version: 1.3.15
-  date: 2018-07-06T13:40:43Z
+  date: 2018-07-06T13:40:43.000Z
   commits:
     - hash: 73dad1ed041101d794dc900db986248795776107
       author: Jonas Hermsmeier
@@ -73,16 +83,16 @@
         This switches to using `getmntent_r()`, which is threadsafe
         and thus allows for multiple simultaneous calls to mountutils
 - version: 1.3.14
-  date: 2018-06-19T14:28:24Z
+  date: 2018-06-19T14:28:24.000Z
   commits:
     - hash: a96449b9a0aa521ed414c14497a1b75cc4df0411
       author: Jonas Hermsmeier
       footers:
         change-type: patch
       subject: 'fix(test): Add python requirements.txt'
-      body:
+      body: null
 - version: 1.3.13
-  date: 2018-06-08T16:20:28Z
+  date: 2018-06-08T16:20:28.000Z
   commits:
     - hash: 0fd680aa9836d1f078e5d331b33584f79ff35a21
       author: Jonas Hermsmeier
@@ -94,7 +104,7 @@
         - prebuild 7.4.0 -> 7.6.0
         - prebuild-install 2.5.1 -> 4.0.0
 - version: 1.3.12
-  date: 2018-05-25T12:32:54Z
+  date: 2018-05-25T12:32:54.000Z
   commits:
     - hash: e282e275d53a0fdfd759d09fec2fdfc91414a44c
       author: Jonas Hermsmeier
@@ -105,7 +115,7 @@
         This passes the newly required `async_resource` when calling
         callbacks from AsyncWorkers
 - version: 1.3.11
-  date: 2018-04-02T13:59:28Z
+  date: 2018-04-02T13:59:28.000Z
   commits:
     - hash: 117fb546d51cf7b12f6d47d522c55c3498a5af76
       author: Jonas Hermsmeier
@@ -120,7 +130,7 @@
         - prebuild             7.0.0 -> 7.4.0
         - prebuild-install     2.4.1 -> 2.5.1
 - version: 1.3.10
-  date: 2018-01-20T00:31:33Z
+  date: 2018-01-20T00:31:33.000Z
   commits:
     - hash: df1c7e2d0cc8eeab114f34af5648878609ff174d
       author: Jonas Hermsmeier
@@ -131,7 +141,7 @@
         This fixes partial unmounts on Linux, which could happen due to
         unmounting during proc/mnt iteration.
 - version: 1.3.9
-  date: 2018-01-19T21:26:12Z
+  date: 2018-01-19T21:26:12.000Z
   commits:
     - hash: 9033fb68333f8b06909e68f0f864dc6a599f5e36
       author: Jonas Hermsmeier
@@ -142,7 +152,7 @@
         This updates the libraries being linked against on Windows, based on
         methods used, while also adding useful MSVC linker & compiler flags.
 - version: 1.3.8
-  date: 2017-12-21T14:52:46Z
+  date: 2017-12-21T14:52:46.000Z
   commits:
     - hash: 15723121263cc4a85a9f8d1520ae7156b15e3597
       author: Jonas Hermsmeier
@@ -156,25 +166,25 @@
         - jsdoc-to-markdown 3.0.0 -> 3.0.2
         - prebuild 6.2.1 -> 7.0.0
 - version: 1.3.7
-  date: 2017-12-14T08:33:22Z
+  date: 2017-12-14T08:33:22.000Z
   commits:
     - hash: 7c47e7179be79ea01706389462ab4c1134affe49
       author: Jonas Hermsmeier
       footers:
         change-type: patch
       subject: 'fix(package): Fix prebuild script being run on build'
-      body:
+      body: null
 - version: 1.3.6
-  date: 2017-12-12T15:08:26Z
+  date: 2017-12-12T15:08:26.000Z
   commits:
     - hash: 43635df68f66d03e2b41a6911208c5271adbf97e
       author: Jonas Hermsmeier
       footers:
         change-type: patch
       subject: 'test(ci): Fix pip -> pip2 on Travis CI'
-      body:
+      body: null
 - version: 1.3.5
-  date: 2017-10-19T19:51:58Z
+  date: 2017-10-19T19:51:58.000Z
   commits:
     - hash: 6cc1cf9a7a9b85a956769708486edcc73604fa07
       author: Jonas Hermsmeier
@@ -185,16 +195,16 @@
         As previous efforts have shown, the `--arch` flags on `prebuild`
         didn't do the expected, and this now runs CI builds on x86 as well.
 - version: 1.3.4
-  date: 2017-10-18T18:02:32Z
+  date: 2017-10-18T18:02:32.000Z
   commits:
     - hash: 02e004b3c715686e17520f0a9cdb1288cec73bb8
       author: Jonas Hermsmeier
       footers:
         change-type: patch
       subject: 'chore(scripts): Also prebuild x86 on Windows and Linux'
-      body:
+      body: null
 - version: 1.3.3
-  date: 2017-10-17T12:27:41Z
+  date: 2017-10-17T12:27:41.000Z
   commits:
     - hash: baa2f3d6ce889b353e44ab525957531432d1220b
       author: Jonas Hermsmeier
@@ -205,16 +215,16 @@
         - eslint 4.7.2 -> 4.9.0
         - mocha 3.5.3 -> 4.0.1
 - version: 1.3.2
-  date: 2017-10-15T21:02:08Z
+  date: 2017-10-15T21:02:08.000Z
   commits:
     - hash: 077919881ce06b4c48351dc96bb2a4fc423bb9c9
       author: Andrew Scheller
       footers:
         change-type: patch
       subject: Make publishing scripts executable
-      body: '...hopefully this will fix deploy errors'
+      body: ...hopefully this will fix deploy errors
 - version: 1.3.1
-  date: 2017-10-13T15:33:56Z
+  date: 2017-10-13T15:33:56.000Z
   commits:
     - hash: 1ab45ddb5a39dfb654fcf46595b798e356f7b7bb
       author: Jonas Hermsmeier
@@ -233,7 +243,7 @@
         This should fix an issue with some Travis CI machines not finding
         `bash` via `#!/usr/bin/env bash`.
 - version: 1.3.0
-  date: 2017-10-13T12:35:11Z
+  date: 2017-10-13T12:35:11.000Z
   commits:
     - hash: 3bc383301bc22795f265394311253d7505668aa6
       author: Jonas Hermsmeier
@@ -275,17 +285,17 @@
         [prebuild]: https://github.com/prebuild/prebuild
         [prebuild-install]: https://github.com/prebuild/prebuild-install
 - version: 1.2.2
-  date: 2017-08-28T15:27:43Z
+  date: 2017-08-28T15:27:43.000Z
   commits:
     - hash: 20c5d5463ea095f7e1a8af5f286b62e7970e8a17
       author: Juan Cruz Viotti
       footers:
-        see: https://github.com/resin-io/etcher/issues/1689
+        see: 'https://github.com/resin-io/etcher/issues/1689'
         signed-off-by: Juan Cruz Viotti <jv@jviotti.com>
       subject: 'fix(windows): retry ejection various times before giving up'
-      body:
+      body: null
 - version: 1.2.1
-  date: 2017-07-24T02:33:57Z
+  date: 2017-07-24T02:33:57.000Z
   commits:
     - hash: 37d32626683254eda42d44f818784d3f680a3852
       author: Juan Cruz Viotti
@@ -322,7 +332,7 @@
       footers:
         change-type: patch
       subject: 'doc(README): Update CI badge labels'
-      body: Adds labels for linux, mac & windows to CI badges.
+      body: 'Adds labels for linux, mac & windows to CI badges.'
     - hash: 28e7c80f2e2c19d2b66959beeee545228be8e336
       author: Jonas Hermsmeier
       footers:
@@ -332,11 +342,13 @@
     - hash: 539e71388fd645595b0a51e3fd812e5d0aa2b1eb
       author: Jonas Hermsmeier
       subject: 'doc(README): Update badges'
-      body: This adds npm version, license, and download badges, while also normalising their style.
+      body: >-
+        This adds npm version, license, and download badges, while also
+        normalising their style.
     - hash: ce2c1d6275f5d2c9dcee547c706722f2120137f1
       author: Jonas Hermsmeier
       subject: 'chore(package): Version 1.2.0'
-      body:
+      body: null
     - hash: 1151dd47e603a6e3c13969c16df94c56b81df12f
       author: Jonas Hermsmeier
       footers:
@@ -356,11 +368,11 @@
     - hash: 0ca527e3e6dc5df3f176ecb896dad6fc32c0d095
       author: Jonas Hermsmeier
       subject: 'chore(binding): Only declare common sources once'
-      body:
+      body: null
     - hash: d09d5ff6f1b070a6efac2678cd54daca9e286eb5
       author: Jonas Hermsmeier
       subject: 'refactor(src): Use Nan::Export() to expose methods'
-      body:
+      body: null
     - hash: 59fd34eddde267be32414c27d8df759534eb166f
       author: Jonas Hermsmeier
       footers:
@@ -388,55 +400,61 @@
     - hash: ed14f973f1ce3cb8cb975b14f898afcb5d9f2c9c
       author: Jonas Hermsmeier
       subject: 'chore(package): Version 1.1.0'
-      body:
+      body: null
     - hash: a99ffe831561e38d07cedcfe63802a3ea1b6255e
       author: Jonas Hermsmeier
       subject: 'feat(darwin): Implement .eject() to eject a disk'
-      body:
+      body: null
     - hash: c07a91658c8d030b538d215f591581d972dafb33
       author: Jonas Hermsmeier
       subject: 'feat(windows): Stub .eject() implementation'
-      body:
+      body: null
     - hash: 10786fd07b25fbd5a4d020fd0c2954bba4739f64
       author: Jonas Hermsmeier
       subject: 'feat(linux): Stub .eject() implementation'
-      body:
+      body: null
     - hash: 0437956cfcbcf47df39cb50ae65f588b02b74d8e
       author: Jonas Hermsmeier
       subject: 'doc(darwin): Fix a comment on the runloop ref'
-      body:
+      body: null
     - hash: 98b3ef3060076b8f7b8488ee7863651b51d32db5
       author: Jonas Hermsmeier
       subject: 'doc(example): Add ejection example'
-      body:
+      body: null
     - hash: 927394ee429996ae25c3bbe4232279b9982c9c92
       author: Jonas Hermsmeier
       subject: 'fix(linux): Add forgotten callback argument'
-      body:
+      body: null
     - hash: 27ddaec3f5652673731332581764e828b1b37485
       author: Jonas Hermsmeier
       subject: 'fix(darwin): Handle longer duration ejections'
-      body:
+      body: null
     - hash: 632f3ad43243c5d173cf17ffabfbe793e371cf4f
       author: Jonas Hermsmeier
       subject: 'doc(example): Fix usage info'
-      body:
+      body: null
     - hash: 82b9a3e51869c6ce55eaefa783c79e38cb643bea
       author: Jonas Hermsmeier
       footers:
         change-type: patch
       subject: 'fix(windows): Replace use of `wsprintf()`'
-      body: |-
-        Due to security considerations, this replaces [wsprintf()] with [sprintf_s()].
-        See https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
-        [wsprintf()]: https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
+      body: >-
+        Due to security considerations, this replaces [wsprintf()] with
+        [sprintf_s()].
+
+        See
+        https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
+
+        [wsprintf()]:
+        https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
+
         [sprintf_s()]: https://msdn.microsoft.com/en-us/library/ce3zzk1k.aspx
     - hash: 3478e65206169d4b71c1e835b0742beca9e84d50
       author: Juan Cruz Viotti
       footers:
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: Improve logical drive loop logging
-      body:
+      body: null
     - hash: b7bf49332678954d4bb288e89ccf1b35faff8dac
       author: Juan Cruz Viotti
       footers:
@@ -503,31 +521,55 @@
       footers:
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: Make `nan` a production dependency
-      body: |-
+      body: >-
         The `nan` project examples recommend having it as a production
+
         development. Currently, Windows builds from npm fail because of this:
+
         ```
-        C:\Projects\playground\mountutils-test\node_modules\mountutils>if not defined npm_config_node_gyp (node "C:\Users\jviotti\AppData\Roaming\npm\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" rebuild )  else (node "" rebuild )
+
+        C:\Projects\playground\mountutils-test\node_modules\mountutils>if not
+        defined npm_config_node_gyp (node
+        "C:\Users\jviotti\AppData\Roaming\npm\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js"
+        rebuild )  else (node "" rebuild )
+
         module.js:440
+
         throw err;
+
         ^
+
         Error: Cannot find module 'nan'
+
         at Function.Module._resolveFilename (module.js:438:15)
+
         at Function.Module._load (module.js:386:25)
+
         at Module.require (module.js:466:17)
+
         at require (internal/module.js:20:19)
+
         at [eval]:1:1
+
         at Object.exports.runInThisContext (vm.js:54:17)
+
         at Object.<anonymous> ([eval]-wrapper:6:22)
+
         at Module._compile (module.js:541:32)
+
         at node.js:329:29
+
         at _combinedTickCallback (internal/process/next_tick.js:67:7)
-        gyp: Call to 'node -e "require('nan')"' returned exit status 1 while in binding.gyp. while trying to load binding.gyp
+
+        gyp: Call to 'node -e "require('nan')"' returned exit status 1 while in
+        binding.gyp. while trying to load binding.gyp
+
         ```
     - hash: bed6309047e06c1479e688c5a8c2ec5522e734d0
       author: Juan Cruz Viotti
       footers:
-        see: https://ci.appveyor.com/project/resin-io/etcher/build/1.0.2976/job/8h2ruf070c9mh3a9
+        see: >-
+          https://ci.appveyor.com/project/resin-io/etcher/build/1.0.2976/job/8h2ruf070c9mh3a9
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: Don't use wildcards at binding.gyp
       body: This is causing errors on Appveyor when installing this module from npm.
@@ -558,15 +600,15 @@
       footers:
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: 'Explain error C2373: ''__pfnDliNotifyHook2'': redefinition'
-      body:
+      body: null
     - hash: c0539dca61bb83e5dc88471950f32f296fca3624
       author: Jonas Hermsmeier
       subject: 'feat(linux): Enhance error with errno, syscall & path'
-      body:
+      body: null
     - hash: 228761ab8996be0631a0ae256ef3dc72a22eb0b7
       author: Jonas Hermsmeier
       subject: 'feat(linux): Implement unmounting of a device'
-      body:
+      body: null
     - hash: a6c78b8d2310b42d99093fbe69cd1eae0baa1b5a
       author: Jonas Hermsmeier
       subject: 'fix(linux): Fix unmounting'
@@ -580,7 +622,7 @@
       footers:
         connects-to: '#15'
       subject: 'fix(linux): Stat device before attempting unmount'
-      body:
+      body: null
     - hash: 9104826b2c6696452a77953160a44f10b109b2b2
       author: Jonas Hermsmeier
       subject: 'fix(linux): Don''t error when device is not mounted'
@@ -588,40 +630,40 @@
     - hash: 3bf08029bfebe321e951d9ac1329804b36d4138c
       author: Jonas Hermsmeier
       subject: 'fix(linux): Error if device path is a directory'
-      body:
+      body: null
     - hash: b4d60143a82ceed429366038078fcaf76a318ffc
       author: Jonas Hermsmeier
       subject: 'refactor: Move src/{functions_*.cpp -> */functions.cpp}'
-      body:
+      body: null
     - hash: 0b3631380cc830b1b9a673eff8ab94ce93b5b4f1
       author: Jonas Hermsmeier
       subject: 'refactor: Move macros from utils.hpp -> functions.hpp'
-      body:
+      body: null
     - hash: 225b2813dc3c78a2441ddd359cbea99a6c3862bc
       author: Jonas Hermsmeier
       subject: 'refactor: Rename src/functions.hpp -> src/mountutils.hpp'
-      body:
+      body: null
     - hash: a4af05472efc55aec3efc5be97ceb874a9266981
       author: Jonas Hermsmeier
       subject: 'chore(package): Update "lint-cpp" task to recurse into src/'
-      body:
+      body: null
     - hash: d0e9bb97f01c550f9fca66a79ba25fe8e273f45d
       author: Jonas Hermsmeier
       subject: 'fix(darwin): Fix use of undeclared identifier ''SUCCESS'''
-      body:
+      body: null
     - hash: a9cda77608edd433b8052a4010a24c5e525e414c
       author: Juan Cruz Viotti
       footers:
-        fixes: https://github.com/resin-io-modules/mountutils/issues/6
+        fixes: 'https://github.com/resin-io-modules/mountutils/issues/6'
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: 'Windows: retry unmounting 3 times to prevent still assigned letters'
-      body:
+      body: null
     - hash: 2d98faab737c8148620106ee4aada4fb8711f95e
       author: Juan Cruz Viotti
       footers:
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: Integrate Appveyor CI and Travis CI
-      body:
+      body: null
     - hash: a8c897ad8101e4bb8b9b4f5f4b733380b1bc9016
       author: Jonas Hermsmeier
       subject: 'chore(package): Update dependencies'
@@ -632,12 +674,12 @@
     - hash: 71d60d628b2856a1c98d79e0abde9253906adf0e
       author: Jonas Hermsmeier
       subject: 'chore(package): Rebuild (clean, configure, build) on build'
-      body:
+      body: null
     - hash: 723da28dae8e9b8089e0884a8128588002233f0c
       author: Jonas Hermsmeier
       subject: 'test: Add unmount arguments test'
-      body:
+      body: null
     - hash: 2d0160550396a6cefb85a894e8f8fb1f0d303ff3
       author: Jonas Hermsmeier
       subject: 'fix(functions): Throw error if path or callback are missing'
-      body:
+      body: null

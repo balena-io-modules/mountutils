@@ -18,7 +18,7 @@
  * @module mountutils
  */
 
-'use strict';
+"use strict";
 
 /**
  * @summary Unmount a whole disk
@@ -49,9 +49,8 @@
  * });
  */
 
-module.exports = require('bindings')({
-  bindings: 'MountUtils',
-  /* eslint-disable camelcase */
-  module_root: __dirname
-  /* eslint-enable camelcase */
-});
+// Will load a compiled build if present or a prebuild.
+// If no build if found it will throw an exception
+const binding = require('node-gyp-build')(__dirname);
+
+module.exports = binding;

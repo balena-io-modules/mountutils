@@ -20,7 +20,15 @@
     "node": ">=18 <20"
   },
   "files": [
-    "prebuilds"
+    "index.js",
+    "src",
+    "docs",
+    "example",
+    "prebuilds",
+    "binding.gyp",
+    "LICENSE",
+    "README.md",
+    "requirements.txt"
   ],
   "directories": {
     "test": "tests"

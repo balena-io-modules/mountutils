@@ -21,8 +21,8 @@
   },
   "scripts": {
     "configure": "node-gyp configure",
-    "build": "node-gyp-build",
-    "prebuild-release": "prebuildify --all --strip",
+    "build": "node-gyp-build && npm run prebuildify",
+    "prebuildify": "prebuildify --all --strip",
     "rebuild": "node-gyp rebuild",
     "readme": "jsdoc2md --template docs/README.hbs index.js > README.md",
     "lint-js": "eslint *.js",

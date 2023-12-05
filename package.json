@@ -19,9 +19,11 @@
   "engines": {
     "node": ">=18 <20"
   },
+  "files": [
+    "prebuilds"
+  ],
   "directories": {
-    "test": "tests",
-    "prebuilds": "prebuilds"
+    "test": "tests"
   },
   "scripts": {
     "configure": "node-gyp configure",

@@ -16,6 +16,9 @@
     "cross",
     "platform"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "directories": {
     "test": "tests"
   },

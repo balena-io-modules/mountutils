@@ -14,6 +14,10 @@ Install `mountutils` by running:
 $ npm install --save mountutils
 ```
 
+## Prebuild
+
+This project contains cross-platform prebuild for node 18.18.2 and 20.5.1.
+
 ## Debug mode
 
 You can enable debug mode by setting the `MOUNTUTILS_DEBUG` environment

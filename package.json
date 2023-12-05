@@ -20,7 +20,8 @@
     "node": ">=18 <20"
   },
   "directories": {
-    "test": "tests"
+    "test": "tests",
+    "prebuilds": "prebuilds"
   },
   "scripts": {
     "configure": "node-gyp configure",

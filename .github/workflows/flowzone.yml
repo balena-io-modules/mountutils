@@ -25,6 +25,3 @@ jobs:
 
     # Workflows in the same org or enterprise can use the inherit keyword to implicitly pass secrets
     secrets: inherit
-
-    with:
-      tests_run_on: '["ubuntu-20.04","macos-latest","windows-2019"]'

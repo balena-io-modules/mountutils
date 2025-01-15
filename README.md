@@ -16,7 +16,7 @@ $ npm install --save mountutils
 
 ## Prebuild
 
-This project contains cross-platform prebuild for node 18.18.2 and 20.5.1.
+This project contains cross-platform prebuild
 
 ## Debug mode
 
@@ -62,7 +62,7 @@ mountutils.unmountDisk(drive, (error) => {
 ## Support
 
 If you're having any problem, please [raise an issue][newissue] on GitHub and
-the Resin.io team will be happy to help.
+the balena.io team will be happy to help.
 
 ## Tests
 
@@ -85,10 +85,17 @@ npm install -g npm@latest
 
 See the [following `node-gyp` issue](https://github.com/nodejs/node-gyp/issues/972) for more details.
 
+
+
+### ```ModuleNotFoundError: No module named 'distutils'`
+
+Your version of python is too recent for node-gyp to work;
+Use a version <= 3.11 and it should work.
+
 ## Contribute
 
-- Issue Tracker: [github.com/resin-io-modules/mountutils/issues][issues]
-- Source Code: [github.com/resin-io-modules/mountutils][source]
+- Issue Tracker: [github.com/balena-io-modules/mountutils/issues][issues]
+- Source Code: [github.com/balena-io-modules/mountutils][source]
 
 ### Dependencies
 
@@ -105,7 +112,7 @@ $ npm run lint
 
 The project is licensed under the Apache 2.0 license.
 
-[issues]: https://github.com/resin-io-modules/mountutils/issues
-[newissue]: https://github.com/resin-io-modules/mountutils/issues/new
-[source]: https://github.com/resin-io-modules/mountutils
+[issues]: https://github.com/balena-io-modules/mountutils/issues
+[newissue]: https://github.com/balena-io-modules/mountutils/issues/new
+[source]: https://github.com/balena-io-modules/mountutils
 [cpplint]: https://github.com/cpplint/cpplint

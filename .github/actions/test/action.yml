@@ -26,10 +26,10 @@ runs:
       with:
         node-version: ${{ inputs.NODE_VERSION }}
         cache: npm
-
+        
     - name: Test release
       shell: bash
       run: |
-        npm ci
+        npm i
         npm run build
         npm run test

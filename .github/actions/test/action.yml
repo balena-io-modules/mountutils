@@ -27,9 +27,18 @@ runs:
         node-version: ${{ inputs.NODE_VERSION }}
         cache: npm
         
-    - name: Test release
+    - name: Test release on windows
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        npm ci
+        npm run build
+        npm run test
+
+    - name: Test release on mac
+      if: runner.os != 'Windows'
       shell: bash
       run: |
-        npm i
+        npm ci
         npm run build
         npm run test

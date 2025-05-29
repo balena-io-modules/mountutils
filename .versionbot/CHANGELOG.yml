@@ -1,7 +1,22 @@
 - commits:
+    - subject: "major: drop node18 support - add support to node24 - update
+        prebuildify targets - update deps"
+      hash: 8bd3e50e2fafccb224b408879c70db3c0c0ba92d
+      body: ""
+      footer: {}
+      author: JOASSART Edwin
+    - subject: "patch: migrate to prebuilidify + flowzone + upgrade all deps"
+      hash: a2aa310660715d8b3d7994a6391fd5f4cacfcb7b
+      body: ""
+      footer: {}
+      author: Edwin Joassart
+  version: 2.0.0
+  title: ""
+  date: 2025-05-29T13:11:15.413Z
+- commits:
     - subject: Delete .github directory
       hash: 55f96fb121f65af1a77afb52e73603ae0d93edf6
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -11,7 +26,7 @@
 - commits:
     - subject: Add versionbot changelog
       hash: 416b5556307a66ab7362efbb0e19930ad63a05ed
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -26,7 +41,7 @@
       footers:
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
-      subject: 'housekeeping: add CODEOWNERS'
+      subject: "housekeeping: add CODEOWNERS"
       body: null
 - version: 1.3.18
   date: 2019-05-23T17:08:26.000Z
@@ -36,21 +51,21 @@
       footers:
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
-      subject: 'dependencies: Update code to be ready for Node 12'
+      subject: "dependencies: Update code to be ready for Node 12"
       body: null
     - hash: 4349c0716c1d33f1e62f06f3ad0f774a3c2fadd0
       author: Gergely Imreh
       footers:
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
-      subject: 'ci: update appveyor and travis setting for extra Node versions'
+      subject: "ci: update appveyor and travis setting for extra Node versions"
       body: null
     - hash: 34b34a1c9a265d67accbeb2fb82ec0836d1b28a9
       author: Gergely Imreh
       footers:
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
-      subject: 'scripts: remove linting from the testing step'
+      subject: "scripts: remove linting from the testing step"
       body: |-
         Linting can be done still with `npm lint`, but likely need some
         fixing in the future as well. Not changing those sections yet.
@@ -59,7 +74,7 @@
       footers:
         change-type: patch
         signed-off-by: Gergely Imreh <gergely@balena.io>
-      subject: 'ci: update Appveyor prebuild-publish script for batch scripting fixes'
+      subject: "ci: update Appveyor prebuild-publish script for batch scripting fixes"
       body: |-
         It's to avoid `"" was unexpected at this time.` error in Appveyor
         running this scrpipt.
@@ -88,7 +103,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(linux): Use threadsafe getmntent()'
+      subject: "fix(linux): Use threadsafe getmntent()"
       body: |-
         This switches to using `getmntent_r()`, which is threadsafe
         and thus allows for multiple simultaneous calls to mountutils
@@ -99,7 +114,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(test): Add python requirements.txt'
+      subject: "fix(test): Add python requirements.txt"
       body: null
 - version: 1.3.13
   date: 2018-06-08T16:20:28.000Z
@@ -108,7 +123,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'upgrade(package): Bump depenencies'
+      subject: "upgrade(package): Bump depenencies"
       body: |-
         - mocha 5.0.5 -> 5.2.0
         - prebuild 7.4.0 -> 7.6.0
@@ -120,7 +135,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(src): Fix nan callback->call deprecation'
+      subject: "fix(src): Fix nan callback->call deprecation"
       body: |-
         This passes the newly required `async_resource` when calling
         callbacks from AsyncWorkers
@@ -131,7 +146,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'upgrade(package): Bump dependencies'
+      subject: "upgrade(package): Bump dependencies"
       body: |-
         - eslint              4.13.0 -> 4.19.1
         - jsdoc-to-markdown    3.0.2 -> 3.0.4
@@ -146,7 +161,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(linux): Fix partial unmounts on Linux'
+      subject: "fix(linux): Fix partial unmounts on Linux"
       body: |-
         This fixes partial unmounts on Linux, which could happen due to
         unmounting during proc/mnt iteration.
@@ -157,7 +172,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(windows): Link to appropriate libraries'
+      subject: "fix(windows): Link to appropriate libraries"
       body: |-
         This updates the libraries being linked against on Windows, based on
         methods used, while also adding useful MSVC linker & compiler flags.
@@ -168,7 +183,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'upgrade(package): Bump dependencies'
+      subject: "upgrade(package): Bump dependencies"
       body: |-
         - nan 2.7.0 -> 2.8.0
         - prebuild-install 2.2.2 -> 2.4.1
@@ -182,7 +197,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(package): Fix prebuild script being run on build'
+      subject: "fix(package): Fix prebuild script being run on build"
       body: null
 - version: 1.3.6
   date: 2017-12-12T15:08:26.000Z
@@ -191,7 +206,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'test(ci): Fix pip -> pip2 on Travis CI'
+      subject: "test(ci): Fix pip -> pip2 on Travis CI"
       body: null
 - version: 1.3.5
   date: 2017-10-19T19:51:58.000Z
@@ -200,7 +215,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(scripts): Run CI on x86 as well'
+      subject: "chore(scripts): Run CI on x86 as well"
       body: |-
         As previous efforts have shown, the `--arch` flags on `prebuild`
         didn't do the expected, and this now runs CI builds on x86 as well.
@@ -211,7 +226,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(scripts): Also prebuild x86 on Windows and Linux'
+      subject: "chore(scripts): Also prebuild x86 on Windows and Linux"
       body: null
 - version: 1.3.3
   date: 2017-10-17T12:27:41.000Z
@@ -220,7 +235,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'upgrade(package): Bump dependencies'
+      subject: "upgrade(package): Bump dependencies"
       body: |-
         - eslint 4.7.2 -> 4.9.0
         - mocha 3.5.3 -> 4.0.1
@@ -240,7 +255,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(CHANGELOG): Fix changelog formatting'
+      subject: "chore(CHANGELOG): Fix changelog formatting"
       body: |-
         This fixes the CHANGELOG.md format, which got mangled a bit
         with a previous version tag.
@@ -248,7 +263,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(scripts): Ensure the Travis box finds bash'
+      subject: "fix(scripts): Ensure the Travis box finds bash"
       body: |-
         This should fix an issue with some Travis CI machines not finding
         `bash` via `#!/usr/bin/env bash`.
@@ -259,7 +274,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(ci): Add CI deployment scripts'
+      subject: "chore(ci): Add CI deployment scripts"
       body: |-
         This adds deployment step scripts for the prebuilds to
         avoid the CIs accidentally exposing secrets through the logs.
@@ -267,7 +282,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(appveyor): Use VS2015 base image'
+      subject: "chore(appveyor): Use VS2015 base image"
       body: |-
         As VS2013 doesn't support some C++ features used in newer
         versions of Node / V8, the base image is updated to use VS2015.
@@ -275,7 +290,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'upgrade(package): Update dependencies'
+      subject: "upgrade(package): Update dependencies"
       body: |-
         **Dependencies:**
         - bindings 1.2.1 -> 1.3.0
@@ -288,7 +303,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: minor
-      subject: 'feat(package): Add prebuilds for native bindings'
+      subject: "feat(package): Add prebuilds for native bindings"
       body: |-
         This adds support for prebuilding and publishing native bindings
         via [prebuild] and [prebuild-install]
@@ -300,9 +315,9 @@
     - hash: 20c5d5463ea095f7e1a8af5f286b62e7970e8a17
       author: Juan Cruz Viotti
       footers:
-        see: 'https://github.com/resin-io/etcher/issues/1689'
+        see: https://github.com/resin-io/etcher/issues/1689
         signed-off-by: Juan Cruz Viotti <jv@jviotti.com>
-      subject: 'fix(windows): retry ejection various times before giving up'
+      subject: "fix(windows): retry ejection various times before giving up"
       body: null
 - version: 1.2.1
   date: 2017-07-24T02:33:57.000Z
@@ -313,7 +328,7 @@
         change-type: patch
         changelog-entry: Retry the unmount operation if the loop times out in macOS.
         signed-off-by: Juan Cruz Viotti <jv@jviotti.com>
-      subject: 'fix(macos): retry the unmount operation if loop times out'
+      subject: "fix(macos): retry the unmount operation if loop times out"
       body: |-
         We've been experiencing a large amount of "Unmount failed" errors on
         v1.1.0, all of them caused by the unmount wait loop timing out, without
@@ -333,7 +348,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'upgrade(package): Bump dependencies, remove gyp'
+      subject: "upgrade(package): Bump dependencies, remove gyp"
       body: |-
         This bumps dependencies, and removes `node-gyp`,
         as it ships with node, and doesn't need to be depended on explicitly.
@@ -341,29 +356,28 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'doc(README): Update CI badge labels'
-      body: 'Adds labels for linux, mac & windows to CI badges.'
+      subject: "doc(README): Update CI badge labels"
+      body: Adds labels for linux, mac & windows to CI badges.
     - hash: 28e7c80f2e2c19d2b66959beeee545228be8e336
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'doc(README): Update README template'
+      subject: "doc(README): Update README template"
       body: This updates `docs/README.hbs` to reflect changes to the README
     - hash: 539e71388fd645595b0a51e3fd812e5d0aa2b1eb
       author: Jonas Hermsmeier
-      subject: 'doc(README): Update badges'
-      body: >-
-        This adds npm version, license, and download badges, while also
+      subject: "doc(README): Update badges"
+      body: This adds npm version, license, and download badges, while also
         normalising their style.
     - hash: ce2c1d6275f5d2c9dcee547c706722f2120137f1
       author: Jonas Hermsmeier
-      subject: 'chore(package): Version 1.2.0'
+      subject: "chore(package): Version 1.2.0"
       body: null
     - hash: 1151dd47e603a6e3c13969c16df94c56b81df12f
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(darwin): Add local context to avoid global state'
+      subject: "fix(darwin): Add local context to avoid global state"
       body: |-
         This introduces a new strcut as runloop context to avoid
         global state, and thus interfering invokations.
@@ -371,23 +385,23 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(package): Update dependencies'
+      subject: "chore(package): Update dependencies"
       body: |-
         - chain 3.5.0 -> 4.0.0
         - mocha 3.2.0 -> 3.4.2
     - hash: 0ca527e3e6dc5df3f176ecb896dad6fc32c0d095
       author: Jonas Hermsmeier
-      subject: 'chore(binding): Only declare common sources once'
+      subject: "chore(binding): Only declare common sources once"
       body: null
     - hash: d09d5ff6f1b070a6efac2678cd54daca9e286eb5
       author: Jonas Hermsmeier
-      subject: 'refactor(src): Use Nan::Export() to expose methods'
+      subject: "refactor(src): Use Nan::Export() to expose methods"
       body: null
     - hash: 59fd34eddde267be32414c27d8df759534eb166f
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'feat(src): Use Nan::AsyncWorker'
+      subject: "feat(src): Use Nan::AsyncWorker"
       body: |-
         This implements an AsyncWorker for unmount & eject, so that we run
         them in a libuv thread rather than blocking the main JS thread.
@@ -395,7 +409,7 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(npmignore): Exclude .yml files from package'
+      subject: "chore(npmignore): Exclude .yml files from package"
       body: |-
         This excludes the `.yml` CI config file from being bundled
         in the npm package.
@@ -403,61 +417,55 @@
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'chore(travis): Use clang-4.0, remove sudo setting'
+      subject: "chore(travis): Use clang-4.0, remove sudo setting"
       body: |-
         This updates the used compiler from `clang-3.6` to `clang-4.0`
         and also removes the `sudo: false` setting, as it's the default now.
     - hash: ed14f973f1ce3cb8cb975b14f898afcb5d9f2c9c
       author: Jonas Hermsmeier
-      subject: 'chore(package): Version 1.1.0'
+      subject: "chore(package): Version 1.1.0"
       body: null
     - hash: a99ffe831561e38d07cedcfe63802a3ea1b6255e
       author: Jonas Hermsmeier
-      subject: 'feat(darwin): Implement .eject() to eject a disk'
+      subject: "feat(darwin): Implement .eject() to eject a disk"
       body: null
     - hash: c07a91658c8d030b538d215f591581d972dafb33
       author: Jonas Hermsmeier
-      subject: 'feat(windows): Stub .eject() implementation'
+      subject: "feat(windows): Stub .eject() implementation"
       body: null
     - hash: 10786fd07b25fbd5a4d020fd0c2954bba4739f64
       author: Jonas Hermsmeier
-      subject: 'feat(linux): Stub .eject() implementation'
+      subject: "feat(linux): Stub .eject() implementation"
       body: null
     - hash: 0437956cfcbcf47df39cb50ae65f588b02b74d8e
       author: Jonas Hermsmeier
-      subject: 'doc(darwin): Fix a comment on the runloop ref'
+      subject: "doc(darwin): Fix a comment on the runloop ref"
       body: null
     - hash: 98b3ef3060076b8f7b8488ee7863651b51d32db5
       author: Jonas Hermsmeier
-      subject: 'doc(example): Add ejection example'
+      subject: "doc(example): Add ejection example"
       body: null
     - hash: 927394ee429996ae25c3bbe4232279b9982c9c92
       author: Jonas Hermsmeier
-      subject: 'fix(linux): Add forgotten callback argument'
+      subject: "fix(linux): Add forgotten callback argument"
       body: null
     - hash: 27ddaec3f5652673731332581764e828b1b37485
       author: Jonas Hermsmeier
-      subject: 'fix(darwin): Handle longer duration ejections'
+      subject: "fix(darwin): Handle longer duration ejections"
       body: null
     - hash: 632f3ad43243c5d173cf17ffabfbe793e371cf4f
       author: Jonas Hermsmeier
-      subject: 'doc(example): Fix usage info'
+      subject: "doc(example): Fix usage info"
       body: null
     - hash: 82b9a3e51869c6ce55eaefa783c79e38cb643bea
       author: Jonas Hermsmeier
       footers:
         change-type: patch
-      subject: 'fix(windows): Replace use of `wsprintf()`'
-      body: >-
-        Due to security considerations, this replaces [wsprintf()] with
-        [sprintf_s()].
-
-        See
-        https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
-
-        [wsprintf()]:
-        https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
-
+      subject: "fix(windows): Replace use of `wsprintf()`"
+      body: |-
+        Due to security considerations, this replaces [wsprintf()] with [sprintf_s()].
+        See https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
+        [wsprintf()]: https://msdn.microsoft.com/en-us/library/windows/desktop/ms647550(v=vs.85).aspx
         [sprintf_s()]: https://msdn.microsoft.com/en-us/library/ce3zzk1k.aspx
     - hash: 3478e65206169d4b71c1e835b0742beca9e84d50
       author: Juan Cruz Viotti
@@ -531,61 +539,37 @@
       footers:
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: Make `nan` a production dependency
-      body: >-
+      body: |-
         The `nan` project examples recommend having it as a production
-
         development. Currently, Windows builds from npm fail because of this:
-
         ```
-
-        C:\Projects\playground\mountutils-test\node_modules\mountutils>if not
-        defined npm_config_node_gyp (node
-        "C:\Users\jviotti\AppData\Roaming\npm\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js"
-        rebuild )  else (node "" rebuild )
-
+        C:\Projects\playground\mountutils-test\node_modules\mountutils>if not defined npm_config_node_gyp (node "C:\Users\jviotti\AppData\Roaming\npm\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" rebuild )  else (node "" rebuild )
         module.js:440
-
         throw err;
-
         ^
-
         Error: Cannot find module 'nan'
-
         at Function.Module._resolveFilename (module.js:438:15)
-
         at Function.Module._load (module.js:386:25)
-
         at Module.require (module.js:466:17)
-
         at require (internal/module.js:20:19)
-
         at [eval]:1:1
-
         at Object.exports.runInThisContext (vm.js:54:17)
-
         at Object.<anonymous> ([eval]-wrapper:6:22)
-
         at Module._compile (module.js:541:32)
-
         at node.js:329:29
-
         at _combinedTickCallback (internal/process/next_tick.js:67:7)
-
-        gyp: Call to 'node -e "require('nan')"' returned exit status 1 while in
-        binding.gyp. while trying to load binding.gyp
-
+        gyp: Call to 'node -e "require('nan')"' returned exit status 1 while in binding.gyp. while trying to load binding.gyp
         ```
     - hash: bed6309047e06c1479e688c5a8c2ec5522e734d0
       author: Juan Cruz Viotti
       footers:
-        see: >-
-          https://ci.appveyor.com/project/resin-io/etcher/build/1.0.2976/job/8h2ruf070c9mh3a9
+        see: https://ci.appveyor.com/project/resin-io/etcher/build/1.0.2976/job/8h2ruf070c9mh3a9
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
       subject: Don't use wildcards at binding.gyp
       body: This is causing errors on Appveyor when installing this module from npm.
     - hash: fa1e578c8de21b06fa72283b6e5a808150488061
       author: Jonas Hermsmeier
-      subject: 'refactor(linux): Clean up comments, remove unused var'
+      subject: "refactor(linux): Clean up comments, remove unused var"
       body: |-
         Remove an out-of-date comment that slipped in,
         fix accented characters in comments (again),
@@ -609,19 +593,19 @@
       author: Juan Cruz Viotti
       footers:
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
-      subject: 'Explain error C2373: ''__pfnDliNotifyHook2'': redefinition'
+      subject: "Explain error C2373: '__pfnDliNotifyHook2': redefinition"
       body: null
     - hash: c0539dca61bb83e5dc88471950f32f296fca3624
       author: Jonas Hermsmeier
-      subject: 'feat(linux): Enhance error with errno, syscall & path'
+      subject: "feat(linux): Enhance error with errno, syscall & path"
       body: null
     - hash: 228761ab8996be0631a0ae256ef3dc72a22eb0b7
       author: Jonas Hermsmeier
-      subject: 'feat(linux): Implement unmounting of a device'
+      subject: "feat(linux): Implement unmounting of a device"
       body: null
     - hash: a6c78b8d2310b42d99093fbe69cd1eae0baa1b5a
       author: Jonas Hermsmeier
-      subject: 'fix(linux): Fix unmounting'
+      subject: "fix(linux): Fix unmounting"
       body: |-
         - Fix case where the most recent entry in `/proc/mounts`
         would be unmounted
@@ -630,28 +614,28 @@
     - hash: f3d3e17f231e30ef66ea3689f919c45c0d4e0186
       author: Jonas Hermsmeier
       footers:
-        connects-to: '#15'
-      subject: 'fix(linux): Stat device before attempting unmount'
+        connects-to: "#15"
+      subject: "fix(linux): Stat device before attempting unmount"
       body: null
     - hash: 9104826b2c6696452a77953160a44f10b109b2b2
       author: Jonas Hermsmeier
-      subject: 'fix(linux): Don''t error when device is not mounted'
-      body: 'Connects to: #16'
+      subject: "fix(linux): Don't error when device is not mounted"
+      body: "Connects to: #16"
     - hash: 3bf08029bfebe321e951d9ac1329804b36d4138c
       author: Jonas Hermsmeier
-      subject: 'fix(linux): Error if device path is a directory'
+      subject: "fix(linux): Error if device path is a directory"
       body: null
     - hash: b4d60143a82ceed429366038078fcaf76a318ffc
       author: Jonas Hermsmeier
-      subject: 'refactor: Move src/{functions_*.cpp -> */functions.cpp}'
+      subject: "refactor: Move src/{functions_*.cpp -> */functions.cpp}"
       body: null
     - hash: 0b3631380cc830b1b9a673eff8ab94ce93b5b4f1
       author: Jonas Hermsmeier
-      subject: 'refactor: Move macros from utils.hpp -> functions.hpp'
+      subject: "refactor: Move macros from utils.hpp -> functions.hpp"
       body: null
     - hash: 225b2813dc3c78a2441ddd359cbea99a6c3862bc
       author: Jonas Hermsmeier
-      subject: 'refactor: Rename src/functions.hpp -> src/mountutils.hpp'
+      subject: "refactor: Rename src/functions.hpp -> src/mountutils.hpp"
       body: null
     - hash: a4af05472efc55aec3efc5be97ceb874a9266981
       author: Jonas Hermsmeier
@@ -659,14 +643,14 @@
       body: null
     - hash: d0e9bb97f01c550f9fca66a79ba25fe8e273f45d
       author: Jonas Hermsmeier
-      subject: 'fix(darwin): Fix use of undeclared identifier ''SUCCESS'''
+      subject: "fix(darwin): Fix use of undeclared identifier 'SUCCESS'"
       body: null
     - hash: a9cda77608edd433b8052a4010a24c5e525e414c
       author: Juan Cruz Viotti
       footers:
-        fixes: 'https://github.com/resin-io-modules/mountutils/issues/6'
+        fixes: https://github.com/resin-io-modules/mountutils/issues/6
         signed-off-by: Juan Cruz Viotti <jviotti@openmailbox.org>
-      subject: 'Windows: retry unmounting 3 times to prevent still assigned letters'
+      subject: "Windows: retry unmounting 3 times to prevent still assigned letters"
       body: null
     - hash: 2d98faab737c8148620106ee4aada4fb8711f95e
       author: Juan Cruz Viotti
@@ -676,20 +660,20 @@
       body: null
     - hash: a8c897ad8101e4bb8b9b4f5f4b733380b1bc9016
       author: Jonas Hermsmeier
-      subject: 'chore(package): Update dependencies'
+      subject: "chore(package): Update dependencies"
       body: |-
         * mocha 2.2.5 -> 3.2.0
         * nan 2.0.5 -> 2.5.1
         * node-gyp 1.0.3 -> 3.5.0
     - hash: 71d60d628b2856a1c98d79e0abde9253906adf0e
       author: Jonas Hermsmeier
-      subject: 'chore(package): Rebuild (clean, configure, build) on build'
+      subject: "chore(package): Rebuild (clean, configure, build) on build"
       body: null
     - hash: 723da28dae8e9b8089e0884a8128588002233f0c
       author: Jonas Hermsmeier
-      subject: 'test: Add unmount arguments test'
+      subject: "test: Add unmount arguments test"
       body: null
     - hash: 2d0160550396a6cefb85a894e8f8fb1f0d303ff3
       author: Jonas Hermsmeier
-      subject: 'fix(functions): Throw error if path or callback are missing'
+      subject: "fix(functions): Throw error if path or callback are missing"
       body: null

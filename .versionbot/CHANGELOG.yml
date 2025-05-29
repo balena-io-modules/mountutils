@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency cpplint to v1.6.1
+      hash: eea69b778bdaa3c0d224392dd0f8705fb480d7e1
+      body: |
+        Update cpplint from 1.3.0 to 1.6.1
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 2.0.1
+  title: ""
+  date: 2025-05-29T13:57:02.159Z
+- commits:
     - subject: "major: drop node18 support - add support to node24 - update
         prebuildify targets - update deps"
       hash: 8bd3e50e2fafccb224b408879c70db3c0c0ba92d

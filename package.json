@@ -16,34 +16,48 @@
     "cross",
     "platform"
   ],
+  "engines": {
+    "node": ">18 <=24"
+  },
+  "files": [
+    "index.js",
+    "src",
+    "docs",
+    "example",
+    "prebuilds",
+    "binding.gyp",
+    "LICENSE",
+    "README.md",
+    "requirements.txt"
+  ],
   "directories": {
     "test": "tests"
   },
   "scripts": {
     "configure": "node-gyp configure",
-    "build": "node-gyp build",
+    "build": "node-gyp-build && npm run prebuildify",
+    "prebuildify": "prebuildify -t 20.18.1 -t 22.13.0 --strip",
     "rebuild": "node-gyp rebuild",
     "readme": "jsdoc2md --template docs/README.hbs index.js > README.md",
     "lint-js": "eslint *.js",
     "lint-cpp": "cpplint --recursive src",
     "lint": "npm run lint-js && npm run lint-cpp",
-    "test": "mocha tests -R spec",
-    "install": "prebuild-install || node-gyp rebuild",
-    "prebuild-release": "prebuild --all --strip"
+    "test": "npm rebuild && mocha tests -R spec",
+    "install": "node-gyp-build"
   },
   "author": "Juan Cruz Viotti <juan@resin.io>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^4.19.1",
-    "jsdoc-to-markdown": "^4.0.1",
-    "mocha": "^5.2.0",
-    "prebuild": "^7.6.0"
+    "chai": "^5.1.2",
+    "eslint": "^9.18.0",
+    "jsdoc-to-markdown": "^9.1.1",
+    "mocha": "^11.0.1"
   },
   "dependencies": {
     "bindings": "^1.3.0",
-    "nan": "^2.14.0",
-    "prebuild-install": "^4.0.0"
+    "nan": "^2.22.0",
+    "node-gyp-build": "^4.8.4",
+    "prebuildify": "^6.0.1"
   },
   "gypfile": true,
   "bugs": {

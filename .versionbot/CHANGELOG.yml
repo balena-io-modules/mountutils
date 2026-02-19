@@ -1,4 +1,17 @@
 - commits:
+    - subject: "Add id-token: write permission for NPM OIDC publishing"
+      hash: f59747915596ecdbf756011ce04c1f4cc60094cb
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Kyle Harding <kyle@balena.io>
+        signed-off-by: Kyle Harding <kyle@balena.io>
+      author: Kyle Harding
+  version: 2.0.2
+  title: ""
+  date: 2026-02-19T14:39:22.884Z
+- commits:
     - subject: Update dependency cpplint to v1.6.1
       hash: eea69b778bdaa3c0d224392dd0f8705fb480d7e1
       body: |

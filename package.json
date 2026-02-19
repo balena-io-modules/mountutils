@@ -1,6 +1,6 @@
 {
   "name": "mountutils",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "index.js",
   "description": "Cross platform mount related utilities",
   "homepage": "https://github.com/balena-io-modules/mountutils",
@@ -64,6 +64,6 @@
     "url": "https://github.com/balena-io-modules/mountutils/issues"
   },
   "versionist": {
-    "publishedAt": "2025-05-29T13:57:02.247Z"
+    "publishedAt": "2026-02-19T14:39:22.951Z"
   }
 }

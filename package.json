@@ -3,10 +3,10 @@
   "version": "2.0.1",
   "main": "index.js",
   "description": "Cross platform mount related utilities",
-  "homepage": "https://github.com/resin-io-modules/mountutils",
+  "homepage": "https://github.com/balena-io-modules/mountutils",
   "repository": {
     "type": "git",
-    "url": "git://github.com/resin-io-modules/mountutils.git"
+    "url": "git://github.com/balena-io-modules/mountutils.git"
   },
   "keywords": [
     "mount",
@@ -61,7 +61,7 @@
   },
   "gypfile": true,
   "bugs": {
-    "url": "https://github.com/resin-io-modules/mountutils/issues"
+    "url": "https://github.com/balena-io-modules/mountutils/issues"
   },
   "versionist": {
     "publishedAt": "2025-05-29T13:57:02.247Z"

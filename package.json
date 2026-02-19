@@ -6,7 +6,7 @@
   "homepage": "https://github.com/resin-io-modules/mountutils",
   "repository": {
     "type": "git",
-    "url": "git://github.com/resin-io-modules/mountutils.git"
+    "url": "git://github.com/balena-io-modules/mountutils.git"
   },
   "keywords": [
     "mount",

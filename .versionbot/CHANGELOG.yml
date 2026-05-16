@@ -1,4 +1,16 @@
 - commits:
+    - subject: Pin dependencies
+      hash: 8a1bd333bb53689de4c34bf063937b1af9a413af
+      body: |
+        Update chai
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 2.0.3
+  title: ""
+  date: 2026-05-16T00:17:00.197Z
+- commits:
     - subject: "Add id-token: write permission for NPM OIDC publishing"
       hash: f59747915596ecdbf756011ce04c1f4cc60094cb
       body: ""

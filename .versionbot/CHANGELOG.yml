@@ -1,4 +1,16 @@
 - commits:
+    - subject: Update dependency eslint to v9.39.5
+      hash: 4945c8fa7adc4b037d13cabc4665d14b196f6015
+      body: |
+        Update eslint from 9.39.4 to 9.39.5
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: balena-renovate[bot]
+  version: 2.0.6
+  title: ""
+  date: 2026-07-18T00:15:03.280Z
+- commits:
     - subject: Update dependency mocha to v11.7.6
       hash: a8cd7d398f49da0b34ab7bb5a220012831a9cb0f
       body: |
